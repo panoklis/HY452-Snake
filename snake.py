@@ -2,6 +2,11 @@ import pygame
 from pygame.locals import *
 import random
 from enum import Enum
+import requests
+import base64
+import json
+import io
+import sys
 
 class Direction(Enum):
     UP = 1
@@ -13,10 +18,6 @@ pygame.init()
 
 screen_width = 600
 screen_height = 800
-
-#Load background image & resize
-background_image = pygame.image.load('background_image.jpg')
-background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('HY452 Snake')
@@ -93,8 +94,45 @@ def draw_game_over():
     screen.blit(again_img, (screen_width // 2 - 80, screen_height // 2 + 10))
 
 
+#Remote background functionality test
+# Fetch image from API & add into background
+def fetch_image_from_api(image_id):
+    api_url = f'https://api-id.execute-api.region.amazonaws.com/your-stage/image?id={image_id}'
+    response = requests.get(api_url)
+    
+    if response.status_code == 200:
+        base64_data = response.json()['body']
+        image_data = base64.b64decode(base64_data)
+        return image_data
+    else:
+        raise Exception(f"Error fetching image: {response.status_code}")
+
+# Load image from bytes into pygame
+def load_image_from_bytes(image_data):
+    image_file = BytesIO(image_data)
+    return pygame.image.load(image_file)
+
+
 run = True
 last_move_final = True
+
+#Load background image & resize
+background_image = pygame.image.load('background_image.jpg')
+background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+
+#Get remote background
+#get 1st argument, if exists
+if len(sys.argv) > 1:
+    remote_bg = int(sys.argv[1])
+    try:
+        image_data = fetch_image_from_api(remote_bg)
+        image = load_image_from_bytes(image_data)
+    except Exception as e:
+        print(f"Failed to fetch image: {e}")
+        pygame.quit()
+        quit()
+    background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+
 
 while run:
 
