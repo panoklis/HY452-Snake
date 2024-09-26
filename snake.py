@@ -29,7 +29,7 @@ again_rect = Rect(screen_width // 2 - 80, screen_height // 2, 160, 50)
 
 #define game variables
 cell_size = 10
-move_delay = 100
+move_delay = 50
 update_snake = 1
 food = [0, 0]
 new_food = True
@@ -130,6 +130,12 @@ while run:
                 else:
                     pygame.event.post(event)
 
+        key = pygame.key.get_pressed()
+        if key[pygame.K_SPACE]:
+            delay = move_delay / 5
+        else:
+            delay = move_delay
+
     #create food
     if new_food == True:
         new_food = False
@@ -168,7 +174,7 @@ while run:
 
     if game_over == False:
         #update snake
-        if update_snake > move_delay:
+        if update_snake > delay:
             update_snake = 1
             #first shift the positions of each snake piece back.
             snake_pos = snake_pos[-1:] + snake_pos[:-1]
