@@ -5,7 +5,7 @@ from enum import Enum
 import requests
 import base64
 import json
-import io
+from io import BytesIO
 import sys
 
 class Direction(Enum):
@@ -97,12 +97,16 @@ def draw_game_over():
 #Remote background functionality test
 # Fetch image from API & add into background
 def fetch_image_from_api(image_id):
-    api_url = f'https://api-id.execute-api.region.amazonaws.com/your-stage/image?id={image_id}'
+    api_url = f'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test/theme'
     response = requests.get(api_url)
     
     if response.status_code == 200:
-        base64_data = response.json()['body']
-        image_data = base64.b64decode(base64_data)
+        #handle json encoded utf8
+        image_data = response.json()['body']
+        image_data = base64.b64decode(image_data)
+        #print to file
+        #with open('test.jpg', 'wb') as f:
+            #f.write(image_data)
         return image_data
     else:
         raise Exception(f"Error fetching image: {response.status_code}")
@@ -117,8 +121,8 @@ run = True
 last_move_final = True
 
 #Load background image & resize
-background_image = pygame.image.load('background_image.jpg')
-background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+#background_image = pygame.image.load('background_image.jpg')
+#background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
 
 #Get remote background
 #get 1st argument, if exists
@@ -131,7 +135,7 @@ if len(sys.argv) > 1:
         print(f"Failed to fetch image: {e}")
         pygame.quit()
         quit()
-    background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+    background_image = pygame.transform.scale(image, (screen_width, screen_height))
 
 
 while run:
