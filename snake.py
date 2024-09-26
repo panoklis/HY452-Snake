@@ -181,8 +181,8 @@ while run:
     #create food
     if new_food == True:
         new_food = False
-        food[0] = cell_size * random.randint(0, (screen_width / cell_size) - 1)
-        food[1] = cell_size * random.randint(0, (screen_height / cell_size) - 1)
+        food[0] = cell_size * random.randint(0, int(screen_width / cell_size) - 1)
+        food[1] = cell_size * random.randint(0, int(screen_height / cell_size) - 1)
     
     #draw food
     pygame.draw.rect(screen, food_col, (food[0], food[1], cell_size, cell_size))
