@@ -7,6 +7,8 @@ import base64
 import json
 from io import BytesIO
 import sys
+import threading
+import time
 
 class Direction(Enum):
     UP = 1
@@ -38,6 +40,7 @@ new_piece = [0, 0]
 game_over = False
 clicked = False
 score = 0
+post_interval = 10
 
 #define snake variables
 snake_pos = [[int(screen_width / 2), int(screen_height / 2)]]
@@ -55,13 +58,13 @@ head_col = (255, 140, 0)
 blue = (0, 0, 255)
 red = (255, 0, 0)
 
-def draw_background():
+def draw_background(background_image):
     screen.blit(background_image, (0, 0))
 
 def draw_screen():
     screen.fill(bg)
 
-def draw_score():
+def draw_score(score):
     score_txt = 'Score: ' + str(score)
     score_img = font.render(score_txt, True, blue)
     screen.blit(score_img, (0, 0))
@@ -116,13 +119,21 @@ def load_image_from_bytes(image_data):
     image_file = BytesIO(image_data)
     return pygame.image.load(image_file)
 
+# Send score to API
+# Function to handle the POST request
+def send_post_request(url, data):
+    response = requests.post(url, json=data)
+    #print send score action
 
-run = True
-last_move_final = True
+    print(f"Status Code: {response.status_code}")
+    print(f"Response Content: {response.text}")
+
+# URL for the POST request
+url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test/update-leaderboard'
 
 #Load background image & resize
-#background_image = pygame.image.load('background_image.jpg')
-#background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+background_image = pygame.image.load('background_image.jpg')
+background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
 
 #Get remote background
 #get 1st argument, if exists
@@ -138,11 +149,23 @@ if len(sys.argv) > 1:
     background_image = pygame.transform.scale(image, (screen_width, screen_height))
 
 
+run = True
+last_move_final = True
+current_time = time.time()
+score_changed = False
+
 while run:
 
     #draw_screen()
-    draw_background()
-    draw_score()
+    draw_background(background_image)
+    draw_score(score)
+    if score_changed and time.time() - current_time > post_interval:
+        score_changed = False
+        current_time = time.time()
+        data = {'userID': 'gamiolis', 'score': score}
+        post_thread = threading.Thread(target=send_post_request, args=(url, data))
+        post_thread.start()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -211,6 +234,7 @@ while run:
 
         #increase score
         score += 1
+        score_changed = True
 
 
 
