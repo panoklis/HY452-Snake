@@ -4,6 +4,7 @@ from menu import *
 from enum import Enum
 import time
 import random
+from server import ScoreServer
 
 
 class Direction(Enum):
@@ -38,6 +39,8 @@ class Game():
         self.score = 0
         self.highscore = 0
         self.post_interval = 10
+        self.server_url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test'
+        self.server = ScoreServer(self.server_url)
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY = False, False, False, False, False, False, False
@@ -112,7 +115,10 @@ class Game():
         score_changed = False
 
         #Draw the game screen
-        background_image = pygame.image.load('background_image.jpg')
+        #background_image = pygame.image.load('background_image.jpg')
+        #background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
+
+        background_image = pygame.image.load(self.server.get_background())
         background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
 
         self.playing = True
@@ -120,6 +126,11 @@ class Game():
         while self.playing:
             self.draw_background(background_image)
             self.draw_score()
+            if time.time() - current_time > self.post_interval and score_changed:
+                current_time = time.time()
+                score_changed = False
+                self.server.post_score('gamiolis', self.score)
+                
             if score_changed:
                 if self.score > self.highscore:
                     self.highscore = self.score
