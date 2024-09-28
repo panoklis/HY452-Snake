@@ -1,2 +1,4 @@
+.gitignore
 get.py
 post.py
+menu_system/__pycache__
