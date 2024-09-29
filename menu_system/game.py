@@ -41,7 +41,7 @@ class Game():
         self.post_interval = 5
         self.gameover_interval = 3
         self.server_url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test'
-        self.player_name = 'gamiolis'
+        self.player_name = 'player2'
         self.server = ScoreServer(self.server_url, self.player_name)
 
         self.running, self.playing = True, False
