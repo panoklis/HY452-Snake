@@ -46,7 +46,8 @@ class Game():
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY = False, False, False, False, False, False, False
-        self.font_name = pygame.font.get_default_font()
+        #load font from ttf
+        self.font_name = 'Super Moods.ttf'
         self.def_font = pygame.font.Font(self.font_name, 20)    
 
         #define snake variables
@@ -104,7 +105,7 @@ class Game():
         over_text = "Game Over!"
         score_text = "Score: " + str(self.score)
         self.draw_text(over_text, 60, self.DISPLAY_W // 2 - 160, self.DISPLAY_H // 2 - 60, self.BLUE)
-        self.draw_text(score_text, 60, self.DISPLAY_W // 2 - 160, self.DISPLAY_H // 2 - 10, self.BLUE)
+        self.draw_text(score_text, 80, self.DISPLAY_W // 2 - 160, self.DISPLAY_H // 2 - 10, self.BLUE)
 
     def game_loop(self):
         if not self.playing:
@@ -343,7 +344,34 @@ class Game():
         text_rect.topleft = (x, y)
         self.display.blit(text_surface, text_rect)
 
+    def draw_text_outline(self, text, size, x, y, color, outline_color, offset):
+        font = pygame.font.Font(self.font_name, size)
+        #Outline
+        text_surface = font.render(text, True, outline_color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x-offset, y)
+        self.display.blit(text_surface, text_rect)
+        text_rect.topleft = (x+offset, y)
+        self.display.blit(text_surface, text_rect)
+        text_rect.topleft = (x, y-offset)
+        self.display.blit(text_surface, text_rect)
+        text_rect.topleft = (x, y+offset)
+        self.display.blit(text_surface, text_rect)
+        
+        text_rect.topleft = (x-offset, y-offset)
+        self.display.blit(text_surface, text_rect)
+        text_rect.topleft = (x-offset, y+offset)
+        self.display.blit(text_surface, text_rect)
+        text_rect.topleft = (x+offset, y-offset)
+        self.display.blit(text_surface, text_rect)
+        text_rect.topleft = (x+offset, y+offset)
+        self.display.blit(text_surface, text_rect)
 
+        #Text
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x, y)
+        self.display.blit(text_surface, text_rect)
 
 
 

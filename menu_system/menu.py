@@ -58,15 +58,15 @@ class MainMenu(Menu):
                 anim_delay += 1
             self.game.display.blit(self.bg_frames[self.frame_index], (-100, 0))
 
-            self.game.draw_text('HY452 Snake Game', 40, self.mid_w + self.x_offset - 20, self.mid_h - 390, self.game.WHITE)
-            self.game.draw_text('Main Menu', 60, self.mid_w + self.x_offset, self.mid_h - 220, self.game.WHITE)
+            self.game.draw_text_outline('HY452 Snake Game', 40, self.mid_w + self.x_offset - 20, self.mid_h - 390, self.game.BLACK, self.game.WHITE, 2)
+            self.game.draw_text_outline('Main Menu', 60, self.mid_w + self.x_offset, self.mid_h - 220, self.game.BLACK, self.game.WHITE, 2)
             if self.game.game_over:
-                self.game.draw_text("Start Game", 90, self.startx + self.x_offset, self.starty-100, self.game.WHITE)
+                self.game.draw_text_outline("Start Game", 90, self.startx + self.x_offset, self.starty-100, self.game.BLACK, self.game.WHITE, 2)
             else:
-                self.game.draw_text("Resume", 90, self.startx + self.x_offset, self.starty-100, self.game.WHITE)
-            self.game.draw_text("Highscores", 90, self.highscoresx + self.x_offset, self.highscoresy, self.game.WHITE)
-            self.game.draw_text("Settings", 90, self.settingsx + self.x_offset, self.settingsy+100, self.game.WHITE)
-            self.game.draw_text("Quit", 90, self.quitx + self.x_offset, self.quity+200, self.game.WHITE)
+                self.game.draw_text_outline("Resume", 90, self.startx + self.x_offset, self.starty-100, self.game.BLACK, self.game.WHITE, 2)
+            self.game.draw_text_outline("Highscores", 90, self.highscoresx + self.x_offset, self.highscoresy, self.game.BLACK, self.game.WHITE, 2)
+            self.game.draw_text_outline("Settings", 90, self.settingsx + self.x_offset, self.settingsy+100, self.game.BLACK, self.game.WHITE, 2)
+            self.game.draw_text_outline("Quit", 90, self.quitx + self.x_offset, self.quity+200, self.game.BLACK, self.game.WHITE, 2)
             self.draw_cursor()
             self.blit_screen()
 
@@ -150,13 +150,13 @@ class HighScores(Menu):
                 self.leaderboard_get_time = time.time()
             #print leaderboard sorted by score
             if self.page > 1 and self.page < self.total_pages:
-                self.page_symbol = '[<< >>]'
+                self.page_symbol = '<< >>'
             elif self.page == 1 and self.page < self.total_pages:
-                self.page_symbol = '[   >>]'
+                self.page_symbol = '   >>'
             elif self.page > 1 and self.page == self.total_pages:
-                self.page_symbol = '[<<   ]'
+                self.page_symbol = '<<   '
             else:
-                self.page_symbol = '[     ]'
+                self.page_symbol = '     '
             self.game.display.fill(self.game.BLACK)
             self.game.draw_text('Leaderboard (last: ' + time.strftime('%H:%M:%S', time.localtime(self.leaderboard_get_time)) + ')   ' + self.page_symbol, 30, 20, 10, self.game.WHITE)
             self.game.draw_text('Position', 20, 20, 50, self.game.WHITE)
