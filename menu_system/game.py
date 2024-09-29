@@ -33,12 +33,13 @@ class Game():
         self.food = [0, 0]
         self.new_food = True
         self.new_piece = [0, 0]
-        self.game_over = False
+        self.game_over = True
         self.pause = False
         self.clicked = False
         self.score = 0
         self.highscore = 0
-        self.post_interval = 10
+        self.post_interval = 5
+        self.gameover_interval = 3
         self.server_url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test'
         self.server = ScoreServer(self.server_url)
 
@@ -65,10 +66,10 @@ class Game():
         self.BLACK = (0, 0, 0)
         self.WHITE = (255, 255, 255)
         
-        #self.main_menu = MainMenu(self)
+        self.main_menu = MainMenu(self)
         #self.options = OptionsMenu(self)
         #self.credits = CreditsMenu(self)
-        #self.curr_menu = self.main_menu
+        self.curr_menu = self.main_menu
         print("Game Initialized")
 
     def draw_background(self,background_image):
@@ -100,32 +101,29 @@ class Game():
 
     def draw_game_over(self):
         over_text = "Game Over!"
-        over_img = self.def_font.render(over_text, True, self.BLACK)
-        pygame.draw.rect(self.display, self.RED, (self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 60, 160, 50))
-        self.display.blit(over_img, (self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 50))
-
-        again_text = 'Play Again?'
-        again_img = self.def_font.render(again_text, True, self.BLUE)
-        pygame.draw.rect(self.display, self.RED, self.again_rect)
-        self.display.blit(again_img, (self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 + 10))
+        score_text = "Score: " + str(self.score)
+        self.draw_text(over_text, 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 60, self.BLUE)
+        self.draw_text(score_text, 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 20, self.BLUE)
 
     def game_loop(self):
+        if not self.playing:
+            return
         last_move_final = True
         current_time = time.time()
         score_changed = False
 
         #Draw the game screen
-        #background_image = pygame.image.load('background_image.jpg')
-        #background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
-
-        background_image = pygame.image.load(self.server.get_background())
+        background_image = pygame.image.load('background_image.jpg')
         background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
 
-        self.playing = True
+        #background_image = pygame.image.load(self.server.get_background())
+        #background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
+
+        self.game_over = False
+        self.pause = False
 
         while self.playing:
             self.draw_background(background_image)
-            self.draw_score()
             if time.time() - current_time > self.post_interval and score_changed:
                 current_time = time.time()
                 score_changed = False
@@ -172,8 +170,8 @@ class Game():
                     self.reset_keys()
                     self.LEFT_KEY = True
             if self.ENTER_KEY:
-                pass
-                #self.ENTER_KEY = False
+                #pass
+                self.ENTER_KEY = False
             if self.BACK_KEY:
                 #pass
                 self.BACK_KEY = False
@@ -259,19 +257,9 @@ class Game():
                         else:
                             self.snake_pos[0][0] = self.snake_pos[1][0] - self.cell_size
                     self.game_over = self.check_game_over()
+                    if self.game_over:
+                        endgame_time = time.time()
                     last_move_final = True
-            
-            if self.game_over == True:
-                self.draw_game_over()
-                if self.ENTER_KEY:
-                    self.ENTER_KEY = False
-                    #reset game variables
-                    print("Game Over")
-                    self.reset_game()
-
-            if self.pause:
-                self.draw_text('Paused', 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 60, self.BLUE)
-                self.draw_text('Press P to unpause', 20, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 20, self.BLUE)
 
             head = 1
             for x in self.snake_pos:
@@ -284,13 +272,32 @@ class Game():
                     pygame.draw.rect(self.display, self.HEAD_COL, (x[0] + 1, x[1] + 1, self.cell_size - 2, self.cell_size - 2))
                     head = 0
 
+            self.draw_score()
+
+            #Endgame/Pausegame logic
+
+            if self.game_over == True:
+                self.draw_game_over()
+                #print(f'endgame_time: {endgame_time} current_time: {time.time()}')
+                if time.time() - endgame_time > self.gameover_interval:
+                    #reset game variables
+                    print("Game Over")
+                    self.reset_game()
+                    self.playing = False
+
+            if self.pause:
+                self.playing = False
+                #self.draw_text('Paused', 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 60, self.BLUE)
+                #self.draw_text('Press P to unpause', 20, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 20, self.BLUE)
+
+
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
-
             self.update_snake += 1    
 
     def reset_game(self):
-        self.game_over = False
+        self.game_over = True
+        self.pause = False
         self.update_snake = 1
         self.food = [0, 0]
         self.new_food = True
