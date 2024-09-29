@@ -160,8 +160,8 @@ class HighScores(Menu):
             self.game.display.fill(self.game.BLACK)
             self.game.draw_text('Leaderboard (last: ' + time.strftime('%H:%M:%S', time.localtime(self.leaderboard_get_time)) + ')   ' + self.page_symbol, 30, 20, 10, self.game.WHITE)
             self.game.draw_text('Position', 20, 20, 50, self.game.WHITE)
-            self.game.draw_text('Player', 20, 150, 50, self.game.WHITE)
-            self.game.draw_text('Score', 20, 310, 50, self.game.WHITE)
+            self.game.draw_text('Player', 20, 170, 50, self.game.WHITE)
+            self.game.draw_text('Score', 20, 380, 50, self.game.WHITE)
             y_offset = 85
             position = 1
             for name, score in sorted(self.leaderboard.items(), key=lambda x: x[1], reverse=True):
@@ -169,12 +169,12 @@ class HighScores(Menu):
                 if position >= (self.page - 1) * self.page_size + 1 and position <= self.page * self.page_size:
                     if name == self.game.player_name:
                         self.game.draw_text(f'{position}', 20, 20, y_offset, self.game.RED)
-                        self.game.draw_text(f'{name}', 20, 150, y_offset, self.game.RED)
-                        self.game.draw_text(f'{score}', 20, 310, y_offset, self.game.RED)
+                        self.game.draw_text(f'{name}', 20, 170, y_offset, self.game.RED)
+                        self.game.draw_text(f'{score}', 20, 380, y_offset, self.game.RED)
                     else:
                         self.game.draw_text(f'{position}', 20, 20, y_offset, self.game.WHITE)
-                        self.game.draw_text(f'{name}', 20, 150, y_offset, self.game.WHITE)
-                        self.game.draw_text(f'{score}', 20, 310, y_offset, self.game.WHITE)
+                        self.game.draw_text(f'{name}', 20, 170, y_offset, self.game.WHITE)
+                        self.game.draw_text(f'{score}', 20, 380, y_offset, self.game.WHITE)
                     y_offset += 30
                 position += 1
             
