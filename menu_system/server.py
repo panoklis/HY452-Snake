@@ -6,12 +6,13 @@ import threading
 
 class ScoreServer():
 
-    def __init__(self, url):
+    def __init__(self, url, name):
         self.url = url
+        self.name = name
 
-    def post_score(self, name, score):
+    def post_score(self, score):
         data = {
-            'userID': name,
+            'userID': self.name,
             'score': score
         }
         post_thread = threading.Thread(target=self._post_score_thread, args=(data,))

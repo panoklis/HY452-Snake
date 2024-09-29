@@ -41,7 +41,8 @@ class Game():
         self.post_interval = 5
         self.gameover_interval = 3
         self.server_url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test'
-        self.server = ScoreServer(self.server_url)
+        self.player_name = 'gamiolis'
+        self.server = ScoreServer(self.server_url, self.player_name)
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY = False, False, False, False, False, False, False
@@ -67,7 +68,7 @@ class Game():
         self.WHITE = (255, 255, 255)
         
         self.main_menu = MainMenu(self)
-        #self.options = OptionsMenu(self)
+        self.highscores = HighScores(self)
         #self.credits = CreditsMenu(self)
         self.curr_menu = self.main_menu
         print("Game Initialized")
@@ -127,7 +128,7 @@ class Game():
             if time.time() - current_time > self.post_interval and score_changed:
                 current_time = time.time()
                 score_changed = False
-                self.server.post_score('gamiolis', self.score)
+                self.server.post_score(self.score)
                 
             if score_changed:
                 if self.score > self.highscore:
@@ -318,7 +319,7 @@ class Game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
                     self.PAUSE_KEY = True
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     self.ENTER_KEY = True
                 if event.key == pygame.K_BACKSPACE:
                     self.BACK_KEY = True

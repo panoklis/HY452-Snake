@@ -1,5 +1,6 @@
 import pygame
 from server import *
+import time
 
 class Menu():
     def __init__(self, game):
@@ -86,17 +87,58 @@ class MainMenu(Menu):
             if self.state == 'Start':
                 self.game.playing = True
             elif self.state == 'Highscores':
-                #self.game.curr_menu = self.game.highscores
-                leaderboard = self.game.server.get_leaderboard()
-                #print leaderboard sorted by score
-                position = 1
-                for name, score in sorted(leaderboard.items(), key=lambda x: x[1], reverse=True):
-                    print(f'{position} :: User: {name} Score: {score}')
-                    position += 1
-            
+                self.game.curr_menu = self.game.highscores
             elif self.state == 'Credits':
                 #self.game.curr_menu = self.game.credits
                 pass
             elif self.state == 'Quit':
                 self.game.running = False
+            self.run_display = False
+
+
+            
+class HighScores(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.leaderboard = self.game.server.get_leaderboard()
+        self.leaderboard_get_time = time.time()
+        self.interval = 5
+
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            if time.time() - self.leaderboard_get_time > self.interval:
+                self.leaderboard = self.game.server.get_leaderboard()
+                self.leaderboard_get_time = time.time()
+                #print leaderboard sorted by score
+                self.game.display.fill(self.game.BLACK)
+                self.game.draw_text('Leaderboard (last: ' + time.strftime('%H:%M:%S', time.localtime(self.leaderboard_get_time)) + ')', 30, 20, 10, self.game.WHITE)
+                self.game.draw_text('Position', 20, 20, 50, self.game.WHITE)
+                self.game.draw_text('Player', 20, 150, 50, self.game.WHITE)
+                self.game.draw_text('Score', 20, 310, 50, self.game.WHITE)
+                y_offset = 90
+                position = 1
+                for name, score in sorted(self.leaderboard.items(), key=lambda x: x[1], reverse=True):
+                    #print(f'{position} :: User: {name} Score: {score}')
+                    #draw text as columns
+                    if name == self.game.player_name:
+                        self.game.draw_text(f'{position}', 20, 20, y_offset, self.game.RED)
+                        self.game.draw_text(f'{name}', 20, 150, y_offset, self.game.RED)
+                        self.game.draw_text(f'{score}', 20, 310, y_offset, self.game.RED)
+                    else:
+                        self.game.draw_text(f'{position}', 20, 20, y_offset, self.game.WHITE)
+                        self.game.draw_text(f'{name}', 20, 150, y_offset, self.game.WHITE)
+                        self.game.draw_text(f'{score}', 20, 310, y_offset, self.game.WHITE)
+                    y_offset += 30
+                    position += 1
+                self.blit_screen()
+
+    def check_input(self):
+        if self.game.BACK_KEY or self.game.ENTER_KEY:
+            self.game.curr_menu = self.game.main_menu
             self.run_display = False
