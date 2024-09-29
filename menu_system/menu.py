@@ -1,6 +1,7 @@
 import pygame
 from server import *
 import time
+import threading
 
 class Menu():
     def __init__(self, game):
@@ -120,9 +121,7 @@ class HighScores(Menu):
                 return
             self.check_input()
             if time.time() - self.leaderboard_get_time > self.interval:
-                self.leaderboard = self.game.server.get_leaderboard()
-                self.total_entries = len(self.leaderboard)
-                self.total_pages = (self.total_entries -1) // self.page_size + 1
+                self.update_leaderboard()
                 self.leaderboard_get_time = time.time()
             #print leaderboard sorted by score
             if self.page > 1 and self.page < self.total_pages:
@@ -165,3 +164,11 @@ class HighScores(Menu):
             self.page -= 1
         if self.game.RIGHT_KEY and self.page < self.total_pages:
             self.page += 1
+    def update_leaderboard(self):
+        thread = threading.Thread(target=self._update_leaderboard_thread)
+        thread.start()
+
+    def _update_leaderboard_thread(self):
+        self.leaderboard = self.game.server.get_leaderboard()
+        self.total_entries = len(self.leaderboard)
+        self.total_pages = (self.total_entries -1) // self.page_size + 1
