@@ -283,6 +283,7 @@ class Game():
                 if time.time() - endgame_time > self.gameover_interval:
                     #reset game variables
                     print("Game Over")
+                    self.server.post_score(self.score)
                     self.reset_game()
                     self.playing = False
 
