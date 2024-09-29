@@ -1,4 +1,5 @@
 import pygame
+from server import *
 
 class Menu():
     def __init__(self, game):
@@ -81,7 +82,13 @@ class MainMenu(Menu):
                 self.game.playing = True
             elif self.state == 'Highscores':
                 #self.game.curr_menu = self.game.highscores
-                pass
+                leaderboard = self.game.server.get_leaderboard()
+                #print leaderboard sorted by score
+                position = 1
+                for name, score in sorted(leaderboard.items(), key=lambda x: x[1], reverse=True):
+                    print(f'{position} :: User: {name} Score: {score}')
+                    position += 1
+            
             elif self.state == 'Credits':
                 #self.game.curr_menu = self.game.credits
                 pass

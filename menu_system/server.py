@@ -33,3 +33,10 @@ class ScoreServer():
         image_data = response.json()['body']
         image = BytesIO(base64.b64decode(image_data))
         return image
+    
+    def get_leaderboard(self):
+        print('Getting leaderboard from server')
+        response = requests.get(self.url + '/update-leaderboard')
+        leaderboard = json.loads(response.json()['body'])
+        leaderboard = {entry['userID']: entry['score'] for entry in leaderboard}
+        return leaderboard
