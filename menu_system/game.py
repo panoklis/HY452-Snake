@@ -39,7 +39,7 @@ class Game():
         self.score = 0
         self.highscore = 0
         self.post_interval = 5
-        self.gameover_interval = 3
+        self.gameover_interval = 2
         self.server_url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test'
         self.player_name = 'player2'
         self.server = ScoreServer(self.server_url, self.player_name)
@@ -103,8 +103,8 @@ class Game():
     def draw_game_over(self):
         over_text = "Game Over!"
         score_text = "Score: " + str(self.score)
-        self.draw_text(over_text, 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 60, self.BLUE)
-        self.draw_text(score_text, 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 20, self.BLUE)
+        self.draw_text(over_text, 60, self.DISPLAY_W // 2 - 160, self.DISPLAY_H // 2 - 60, self.BLUE)
+        self.draw_text(score_text, 60, self.DISPLAY_W // 2 - 160, self.DISPLAY_H // 2 - 10, self.BLUE)
 
     def game_loop(self):
         if not self.playing:
@@ -270,7 +270,7 @@ class Game():
                     pygame.draw.rect(self.display, self.BODY_INNER, (x[0] + 1, x[1] + 1, self.cell_size - 2, self.cell_size - 2))
                 if head == 1:
                     pygame.draw.rect(self.display, self.BODY_OUTER, (x[0], x[1], self.cell_size, self.cell_size))
-                    pygame.draw.rect(self.display, self.HEAD_COL, (x[0] + 1, x[1] + 1, self.cell_size - 2, self.cell_size - 2))
+                    pygame.draw.rect(self.display, self.RED, (x[0] + 1, x[1] + 1, self.cell_size - 2, self.cell_size - 2))
                     head = 0
 
             self.draw_score()

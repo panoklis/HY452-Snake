@@ -1,4 +1,6 @@
 .gitignore
 get.py
 post.py
+gif_extractor.py
 menu_system/__pycache__
+menu_system/extracted_frames/beach

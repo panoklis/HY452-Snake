@@ -11,7 +11,7 @@ class Menu():
         self.cur_offset = - 40
         self.x_offset = -240
         self.cursor_rect = pygame.Rect(self.mid_w + self.cur_offset + self.x_offset, self.mid_h-70, 20, 20)
-        self.cursor_icon = pygame.image.load('snake-icon.png')
+        self.cursor_icon = pygame.image.load('snake-icon-transparent-hardline.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
     def draw_cursor(self):
@@ -29,18 +29,35 @@ class MainMenu(Menu):
         self.state = "Start"
         self.startx, self.starty = self.mid_w, self.mid_h
         self.highscoresx, self.highscoresy = self.mid_w, self.mid_h
-        self.creditsx, self.creditsy = self.mid_w, self.mid_h
+        self.settingsx, self.settingsy = self.mid_w, self.mid_h
         self.quitx, self.quity = self.mid_w, self.mid_h
         self.cursor_rect.midtop = (self.cursor_rect.x, self.cursor_rect.y)
 
+        #Animated background tricks
+        self.bg_frames = self.load_frames('extracted_frames/frame_', 42)
+        self.bg_frames_len = len(self.bg_frames)
+        self.frame_index = -1
+        for i in range(self.bg_frames_len):
+            self.bg_frames[i] = pygame.transform.scale(self.bg_frames[i], (self.game.DISPLAY_H, self.game.DISPLAY_H))
+
     def display_menu(self):
         self.run_display = True
+        anim_delay = 0
         while self.run_display:
             self.game.check_events()
             if self.game.running == False:
                 return
             self.check_input()
-            self.game.display.fill(self.game.BLACK)
+            
+            #self.game.display.fill(self.game.BLACK)
+            #Animated background tricks
+            if anim_delay == 1:
+                anim_delay = 0
+                self.frame_index = (self.frame_index + 1) % self.bg_frames_len
+            else:
+                anim_delay += 1
+            self.game.display.blit(self.bg_frames[self.frame_index], (-100, 0))
+
             self.game.draw_text('HY452 Snake Game', 40, self.mid_w + self.x_offset - 20, self.mid_h - 390, self.game.WHITE)
             self.game.draw_text('Main Menu', 60, self.mid_w + self.x_offset, self.mid_h - 220, self.game.WHITE)
             if self.game.game_over:
@@ -48,7 +65,7 @@ class MainMenu(Menu):
             else:
                 self.game.draw_text("Resume", 90, self.startx + self.x_offset, self.starty-100, self.game.WHITE)
             self.game.draw_text("Highscores", 90, self.highscoresx + self.x_offset, self.highscoresy, self.game.WHITE)
-            self.game.draw_text("Credits", 90, self.creditsx + self.x_offset, self.creditsy+100, self.game.WHITE)
+            self.game.draw_text("Settings", 90, self.settingsx + self.x_offset, self.settingsy+100, self.game.WHITE)
             self.game.draw_text("Quit", 90, self.quitx + self.x_offset, self.quity+200, self.game.WHITE)
             self.draw_cursor()
             self.blit_screen()
@@ -60,9 +77,9 @@ class MainMenu(Menu):
                 self.cursor_rect.midtop = (self.highscoresx + self.cur_offset + self.x_offset, self.highscoresy+20)
                 self.state = 'Highscores'
             elif self.state == 'Highscores':
-                self.cursor_rect.midtop = (self.creditsx + self.cur_offset + self.x_offset, self.creditsy+120)
-                self.state = 'Credits'
-            elif self.state == 'Credits':
+                self.cursor_rect.midtop = (self.settingsx + self.cur_offset + self.x_offset, self.settingsy+120)
+                self.state = 'Settings'
+            elif self.state == 'Settings':
                 self.cursor_rect.midtop = (self.quitx + self.cur_offset + self.x_offset, self.quity+220)
                 self.state = 'Quit'
             elif self.state == 'Quit':
@@ -73,9 +90,9 @@ class MainMenu(Menu):
                 self.cursor_rect.midtop = (self.quitx + self.cur_offset + self.x_offset, self.quity+220)
                 self.state = 'Quit'
             elif self.state == 'Quit':
-                self.cursor_rect.midtop = (self.creditsx + self.cur_offset + self.x_offset, self.creditsy+120)
-                self.state = 'Credits'
-            elif self.state == 'Credits':
+                self.cursor_rect.midtop = (self.settingsx + self.cur_offset + self.x_offset, self.settingsy+120)
+                self.state = 'Settings'
+            elif self.state == 'Settings':
                 self.cursor_rect.midtop = (self.highscoresx + self.cur_offset + self.x_offset, self.highscoresy+20)
                 self.state = 'Highscores'
             elif self.state == 'Highscores':
@@ -89,12 +106,20 @@ class MainMenu(Menu):
                 self.game.playing = True
             elif self.state == 'Highscores':
                 self.game.curr_menu = self.game.highscores
-            elif self.state == 'Credits':
-                #self.game.curr_menu = self.game.credits
+            elif self.state == 'Settings':
+                #self.game.curr_menu = self.game.settings
                 pass
             elif self.state == 'Quit':
                 self.game.running = False
             self.run_display = False
+    
+    # Animated background tricks
+    def load_frames(self,filename, amount):
+        frames = []
+        for i in range(amount):
+                frame_image = pygame.image.load(f'{filename}{i}.png')
+                frames.append(frame_image)
+        return frames
 
 
             
