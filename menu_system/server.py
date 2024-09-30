@@ -19,7 +19,7 @@ class ScoreServer():
         post_thread.start()
         
     def _post_score_thread(self, data):
-        response = requests.post(self.url + '/update-leaderboard', json=data)
+        response = requests.post(self.url + '/leaderboard', json=data)
         if response.status_code == 200:
             print("Score posted successfully")
             print(f'Response: {response.text}')
@@ -30,14 +30,14 @@ class ScoreServer():
             return False
 
     def get_background(self):
-        response = requests.get(self.url + '/theme')
+        response = requests.get(self.url + '/background')
         image_data = response.json()['body']
         image = BytesIO(base64.b64decode(image_data))
         return image
     
     def get_leaderboard(self):
         print('Getting leaderboard from server')
-        response = requests.get(self.url + '/update-leaderboard')
+        response = requests.get(self.url + '/leaderboard')
         leaderboard = json.loads(response.json()['body'])
         leaderboard = {entry['userID']: entry['score'] for entry in leaderboard}
         return leaderboard
