@@ -2,6 +2,7 @@ import pygame
 from server import *
 import time
 import threading
+from PIL import Image
 
 class Menu():
     def __init__(self, game):
@@ -34,9 +35,9 @@ class MainMenu(Menu):
         self.cursor_rect.midtop = (self.cursor_rect.x, self.cursor_rect.y)
 
         #Animated background tricks
-        self.bg_frames = self.load_frames('../assets/images/extracted_frames/frame_', 42)
+        self.bg_frames = self.load_gif_frames('../assets/images/backgrounds/forest_background.gif')
         self.bg_frames_len = len(self.bg_frames)
-        self.frame_index = -1
+        self.frame_index = 0
         for i in range(self.bg_frames_len):
             self.bg_frames[i] = pygame.transform.scale(self.bg_frames[i], (self.game.DISPLAY_H, self.game.DISPLAY_H))
 
@@ -51,7 +52,7 @@ class MainMenu(Menu):
             
             #self.game.display.fill(self.game.BLACK)
             #Animated background tricks
-            if anim_delay == 1:
+            if anim_delay == 2:
                 anim_delay = 0
                 self.frame_index = (self.frame_index + 1) % self.bg_frames_len
             else:
@@ -114,11 +115,28 @@ class MainMenu(Menu):
             self.run_display = False
     
     # Animated background tricks
-    def load_frames(self,filename, amount):
+    def load_gif_frames(self,filename):
+        #import frames from gif
+        gif = Image.open(filename)
         frames = []
-        for i in range(amount):
-                frame_image = pygame.image.load(f'{filename}{i}.png')
-                frames.append(frame_image)
+        base_frame = gif.convert('RGBA')
+
+        try:
+            while True:
+                # Composite the current frame on top of the base frame
+                current_frame = gif.convert('RGBA')
+                base_frame.paste(current_frame, (0, 0), current_frame)
+
+                # Save a copy of the current composited frame
+                frames.append(base_frame.copy())
+
+                # Move to the next frame
+                gif.seek(gif.tell() + 1)
+        except EOFError:
+            pass  # End of GIF
+
+        #Convert frames to pygame images
+        frames = [pygame.image.fromstring(frame.tobytes(), frame.size, frame.mode) for frame in frames]
         return frames
 
 
