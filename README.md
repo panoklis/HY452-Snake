@@ -1,7 +1,7 @@
 # HY452-Snake
 Proof-of-concept snake game with cloud-based scoring system.
 
-Dependencies: pygame, requests, pillow
+Dependencies: pygame, requests, pillow, pyyaml
 
 Press Up, Down, Right, Left to control Snake
 
