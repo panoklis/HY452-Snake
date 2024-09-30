@@ -5,6 +5,7 @@ from enum import Enum
 import time
 import random
 from server import ScoreServer
+import yaml
 
 
 class Direction(Enum):
@@ -17,6 +18,8 @@ class Direction(Enum):
 class Game():
     def __init__(self):
         pygame.init()
+
+        configs = yaml.safe_load(open('../config.yaml'))
         
         self.DISPLAY_W, self.DISPLAY_H = 600, 800
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
@@ -40,8 +43,8 @@ class Game():
         self.highscore = 0
         self.post_interval = 5
         self.gameover_interval = 2
-        self.server_url = 'https://wl2uxwpe15.execute-api.us-east-1.amazonaws.com/test'
-        self.player_name = 'player2'
+        self.server_url = configs['server_url']
+        self.player_name = configs['player_name']
         self.server = ScoreServer(self.server_url, self.player_name)
 
         self.running, self.playing = True, False
