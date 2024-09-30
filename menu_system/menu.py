@@ -15,6 +15,25 @@ class Menu():
         self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
+        #Text colors
+        #self.text_col = self.game.WHITE
+        #self.outline_col = self.game.BLACK
+
+        #self.text_col = self.game.LIGHT_YELLOW
+        #self.outline_col = self.game.DARK_BROWN
+
+        #self.text_col = self.game.BRIGHT_ORANGE
+        #self.outline_col = self.game.DEEP_FOREST_GREEN
+
+        #self.text_col = self.game.SKY_BLUE
+        #self.outline_col = self.game.DARK_BLUE
+
+        #self.text_col = self.game.PASTEL_PINK
+        #self.outline_col = self.game.DARK_PURPLE
+
+        self.text_col = self.game.BRIGHT_RED
+        self.outline_col = self.game.BLACK
+
     def draw_cursor(self):
         #self.game.draw_text('=>', 25, self.cursor_rect.x, self.cursor_rect.y, self.game.WHITE)
         self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
@@ -61,15 +80,15 @@ class MainMenu(Menu):
             #Set animation frame position here
             self.game.display.blit(self.bg_frames[self.frame_index], (0, 0))
 
-            self.game.draw_text_outline('HY452 Snake Game', 40, self.mid_w + self.x_offset - 20, self.mid_h - 390, self.game.BLACK, self.game.WHITE, 2)
-            self.game.draw_text_outline('Main Menu', 60, self.mid_w + self.x_offset, self.mid_h - 220, self.game.BLACK, self.game.WHITE, 2)
+            self.game.draw_text_outline('HY452 Snake Game', 40, self.mid_w + self.x_offset - 20, self.mid_h - 390, self.text_col, self.outline_col, 2)
+            self.game.draw_text_outline('Main Menu', 60, self.mid_w + self.x_offset, self.mid_h - 220, self.text_col, self.outline_col, 2)
             if self.game.game_over:
-                self.game.draw_text_outline("Start Game", 90, self.startx + self.x_offset, self.starty-100, self.game.BLACK, self.game.WHITE, 2)
+                self.game.draw_text_outline("Start Game", 90, self.startx + self.x_offset, self.starty-100, self.text_col, self.outline_col, 2)
             else:
-                self.game.draw_text_outline("Resume", 90, self.startx + self.x_offset, self.starty-100, self.game.BLACK, self.game.WHITE, 2)
-            self.game.draw_text_outline("Highscores", 90, self.highscoresx + self.x_offset, self.highscoresy, self.game.BLACK, self.game.WHITE, 2)
-            self.game.draw_text_outline("Settings", 90, self.settingsx + self.x_offset, self.settingsy+100, self.game.BLACK, self.game.WHITE, 2)
-            self.game.draw_text_outline("Quit", 90, self.quitx + self.x_offset, self.quity+200, self.game.BLACK, self.game.WHITE, 2)
+                self.game.draw_text_outline("Resume", 90, self.startx + self.x_offset, self.starty-100, self.text_col, self.outline_col, 2)
+            self.game.draw_text_outline("Highscores", 90, self.highscoresx + self.x_offset, self.highscoresy, self.text_col, self.outline_col, 2)
+            self.game.draw_text_outline("Settings", 90, self.settingsx + self.x_offset, self.settingsy+100, self.text_col, self.outline_col, 2)
+            self.game.draw_text_outline("Quit", 90, self.quitx + self.x_offset, self.quity+200, self.text_col, self.outline_col, 2)
             self.draw_cursor()
             self.blit_screen()
 

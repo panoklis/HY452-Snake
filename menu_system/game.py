@@ -19,6 +19,11 @@ class Game():
     def __init__(self):
         pygame.init()
 
+        # Load background music
+        pygame.mixer.music.load("../assets/sounds/background_music.mp3")
+        pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
+        pygame.mixer.music.play(-1)  # Play the music (-1 means loop indefinitely)
+
         configs = yaml.safe_load(open('../config.yaml'))
         
         self.DISPLAY_W, self.DISPLAY_H = 600, 800
@@ -68,8 +73,22 @@ class Game():
         self.HEAD_COL = (255, 140, 0)
         self.BLUE = (0, 0, 255)
         self.RED = (255, 0, 0)
-        self.BLACK = (0, 0, 0)
         self.WHITE = (255, 255, 255)
+        #text/outline colors
+        self.LIGHT_YELLOW = pygame.Color(255, 255, 102)
+        self.DARK_BROWN = pygame.Color(102, 51, 0)
+
+        self.BRIGHT_ORANGE = pygame.Color(255, 153, 51)
+        self.DEEP_FOREST_GREEN = pygame.Color(0, 102, 0)
+
+        self.SKY_BLUE = pygame.Color(135, 206, 250)
+        self.DARK_BLUE = pygame.Color(0, 0, 139)
+
+        self.PASTEL_PINK = pygame.Color(255, 182, 193)
+        self.DARK_PURPLE = pygame.Color(102, 0, 102)
+
+        self.BRIGHT_RED = pygame.Color(255, 69, 0)
+        self.BLACK = pygame.Color(0, 0, 0)
         
         self.main_menu = MainMenu(self)
         self.highscores = HighScores(self)
@@ -197,7 +216,7 @@ class Game():
                 self.food[1] = self.cell_size * random.randint(0, int(self.DISPLAY_H / self.cell_size) - 1)
 
             #draw food
-            pygame.draw.rect(self.display, self.FOOD_COL, (self.food[0], self.food[1], self.cell_size, self.cell_size))
+            pygame.draw.rect(self.display, self.BLUE, (self.food[0], self.food[1], self.cell_size, self.cell_size))
 
 
             #check if food has been eaten
