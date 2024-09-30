@@ -35,11 +35,12 @@ class MainMenu(Menu):
         self.cursor_rect.midtop = (self.cursor_rect.x, self.cursor_rect.y)
 
         #Animated background tricks
-        self.bg_frames = self.load_gif_frames('../assets/images/backgrounds/forest_background.gif')
+        self.bg_frames = self.load_gif_frames('../assets/images/backgrounds/cabin_forest_background_600_800.gif')
         self.bg_frames_len = len(self.bg_frames)
         self.frame_index = 0
-        for i in range(self.bg_frames_len):
-            self.bg_frames[i] = pygame.transform.scale(self.bg_frames[i], (self.game.DISPLAY_H, self.game.DISPLAY_H))
+        #Scale animation frames here
+        #for i in range(self.bg_frames_len):
+        #    self.bg_frames[i] = pygame.transform.scale(self.bg_frames[i], (self.game.DISPLAY_H, self.game.DISPLAY_H))
 
     def display_menu(self):
         self.run_display = True
@@ -52,12 +53,13 @@ class MainMenu(Menu):
             
             #self.game.display.fill(self.game.BLACK)
             #Animated background tricks
-            if anim_delay == 2:
+            if anim_delay == 1:
                 anim_delay = 0
                 self.frame_index = (self.frame_index + 1) % self.bg_frames_len
             else:
                 anim_delay += 1
-            self.game.display.blit(self.bg_frames[self.frame_index], (-100, 0))
+            #Set animation frame position here
+            self.game.display.blit(self.bg_frames[self.frame_index], (0, 0))
 
             self.game.draw_text_outline('HY452 Snake Game', 40, self.mid_w + self.x_offset - 20, self.mid_h - 390, self.game.BLACK, self.game.WHITE, 2)
             self.game.draw_text_outline('Main Menu', 60, self.mid_w + self.x_offset, self.mid_h - 220, self.game.BLACK, self.game.WHITE, 2)
