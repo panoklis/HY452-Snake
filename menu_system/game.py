@@ -47,7 +47,7 @@ class Game():
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY = False, False, False, False, False, False, False
         #load font from ttf
-        self.font_name = 'Super Moods.ttf'
+        self.font_name = '../assets/fonts/Super Moods.ttf'
         self.def_font = pygame.font.Font(self.font_name, 20)    
 
         #define snake variables
@@ -115,7 +115,7 @@ class Game():
         score_changed = False
 
         #Draw the game screen
-        background_image = pygame.image.load('background_image.jpg')
+        background_image = pygame.image.load('../assets/images/backgrounds/background_image.jpg')
         background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
 
         #background_image = pygame.image.load(self.server.get_background())

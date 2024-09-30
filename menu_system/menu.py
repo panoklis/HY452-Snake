@@ -11,7 +11,7 @@ class Menu():
         self.cur_offset = - 40
         self.x_offset = -240
         self.cursor_rect = pygame.Rect(self.mid_w + self.cur_offset + self.x_offset, self.mid_h-70, 20, 20)
-        self.cursor_icon = pygame.image.load('snake-icon-transparent-hardline.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
     def draw_cursor(self):
@@ -34,7 +34,7 @@ class MainMenu(Menu):
         self.cursor_rect.midtop = (self.cursor_rect.x, self.cursor_rect.y)
 
         #Animated background tricks
-        self.bg_frames = self.load_frames('extracted_frames/frame_', 42)
+        self.bg_frames = self.load_frames('../assets/images/extracted_frames/frame_', 42)
         self.bg_frames_len = len(self.bg_frames)
         self.frame_index = -1
         for i in range(self.bg_frames_len):
