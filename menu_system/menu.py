@@ -28,11 +28,11 @@ class Menu():
         #self.text_col = self.game.SKY_BLUE
         #self.outline_col = self.game.DARK_BLUE
 
-        #self.text_col = self.game.PASTEL_PINK
-        #self.outline_col = self.game.DARK_PURPLE
+        self.text_col = self.game.PASTEL_PINK
+        self.outline_col = self.game.DARK_PURPLE
 
-        self.text_col = self.game.BRIGHT_RED
-        self.outline_col = self.game.BLACK
+        #self.text_col = self.game.BRIGHT_RED
+        #self.outline_col = self.game.BLACK
 
     def draw_cursor(self):
         #self.game.draw_text('=>', 25, self.cursor_rect.x, self.cursor_rect.y, self.game.WHITE)
