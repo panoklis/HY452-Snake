@@ -255,11 +255,7 @@ class Settings(Menu):
             if self.game.running == False:
                 return
             self.check_input()
-            #visual representation of submenu
             self.game.display.fill(self.game.DARK_BLUE)
-            #Debugging
-            #self.game.draw_text_outline('label   x,y: ' + str(self.labelx) + ',' + str(self.labely), 20, 0, 0, self.game.WHITE, self.game.BLACK, 2)
-            #self.game.draw_text_outline('options x,y: ' + str(self.startx) + ',' + str(self.starty), 20, 0,20, self.game.WHITE, self.game.BLACK, 2)
             self.game.draw_text_outline('Settings', 60, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Customize', 40, self.startx, self.starty, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Server', 40, self.startx, self.starty + self.y_offset, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
@@ -311,33 +307,97 @@ class Settings(Menu):
         if self.game.BACK_KEY or self.game.LEFT_KEY:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
-        if self.game.ENTER_KEY:
-            #self.game.curr_menu = self.game.whatevermenu
-            #self.run_display = False
-            pass
+        if self.game.ENTER_KEY or self.game.RIGHT_KEY:
+            if self.state == 'Customize':
+                self.game.curr_menu = self.game.customize
+                self.run_display = False
+            elif self.state == 'Server':
+                #self.game.curr_menu = self.game.server_menu
+                pass
+            elif self.state == 'User Profile':
+                #self.game.curr_menu = self.game.user_profile
+                pass
+            elif self.state == 'Register':
+                #self.game.curr_menu = self.game.register
+                pass
 
+class Customize(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = "Custom Soundtrack" #first option
+        self.labelx, self.labely = 160, 125
+        self.startx, self.starty = 160, 300
+        self.y_offset = 80
+        self.cur_x_offset = - 60
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            self.game.display.fill(self.game.DARK_BLUE)
+            #Debugging
+            #self.game.draw_text_outline('label   x,y: ' + str(self.labelx) + ',' + str(self.labely), 20, 0, 0, self.game.WHITE, self.game.BLACK, 1)
+            #self.game.draw_text_outline('options x,y: ' + str(self.startx) + ',' + str(self.starty), 20, 0,20, self.game.WHITE, self.game.BLACK, 1)
+            self.game.draw_text_outline('Customize', 60, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Custom Soundtrack', 40, self.startx, self.starty, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Custom Background', 40, self.startx, self.starty + self.y_offset, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.draw_cursor()
+            self.blit_screen()
+
+    
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Custom Soundtrack':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Custom Background'
+            elif self.state == 'Custom Background':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Custom Soundtrack'
+        elif self.game.UP_KEY:
+            if self.state == 'Custom Soundtrack':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Custom Background'
+            elif self.state == 'Custom Background':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Custom Soundtrack'
+    
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
+        if self.game.ENTER_KEY or self.game.RIGHT_KEY:
+            pass
         #Debugging
         #if self.game.W_KEY:
-        #    if self.state == 'Customize':
+        #    if self.state == 'Custom Soundtrack':
         #        self.labely -= 5
-        #    if self.state == 'Server':
+        #    if self.state == 'Custom Background':
         #        self.starty -= 5
         #if self.game.S_KEY:
-        #    if self.state == 'Customize':
+        #    if self.state == 'Custom Soundtrack':
         #        self.labely += 5
-        #    if self.state == 'Server':
+        #    if self.state == 'Custom Background':
         #        self.starty += 5
         #if self.game.A_KEY:
-        #    if self.state == 'Customize':
+        #    if self.state == 'Custom Soundtrack':
         #        self.labelx -= 5
-        #    if self.state == 'Server':
+        #    if self.state == 'Custom Background':
         #        self.startx -= 5
         #if self.game.D_KEY:
-        #    if self.state == 'Customize':
+        #    if self.state == 'Custom Soundtrack':
         #        self.labelx += 5
-        #    if self.state == 'Server':
+        #    if self.state == 'Custom Background':
         #        self.startx += 5
-
 """
 
 class Submenu(Menu):

@@ -89,6 +89,7 @@ class Game():
         self.main_menu = MainMenu(self)
         self.highscores = HighScores(self)
         self.settings = Settings(self)
+        self.customize = Customize(self)
         self.curr_menu = self.main_menu
 
         # Load background music
