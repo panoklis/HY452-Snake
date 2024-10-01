@@ -19,11 +19,6 @@ class Game():
     def __init__(self):
         pygame.init()
 
-        # Load background music
-        pygame.mixer.music.load("../assets/sounds/background_music.mp3")
-        pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
-        pygame.mixer.music.play(-1)  # Play the music (-1 means loop indefinitely)
-
         configs = yaml.safe_load(open('../config.yaml'))
         
         self.DISPLAY_W, self.DISPLAY_H = 600, 800
@@ -53,7 +48,7 @@ class Game():
         self.server = ScoreServer(self.server_url, self.player_name)
 
         self.running, self.playing = True, False
-        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY = False, False, False, False, False, False, False
+        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY = False, False, False, False, False, False, False, False, False, False, False
         #load font from ttf
         self.font_name = '../assets/fonts/Super Moods.ttf'
         self.def_font = pygame.font.Font(self.font_name, 20)    
@@ -90,10 +85,17 @@ class Game():
         self.BRIGHT_RED = pygame.Color(255, 69, 0)
         self.BLACK = pygame.Color(0, 0, 0)
         
+        #initialize menu objects
         self.main_menu = MainMenu(self)
         self.highscores = HighScores(self)
-        #self.credits = CreditsMenu(self)
+        self.settings = Settings(self)
         self.curr_menu = self.main_menu
+
+        # Load background music
+        pygame.mixer.music.load("../assets/sounds/background_music.mp3")
+        pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
+        pygame.mixer.music.play(-1)  # Play the music (-1 means loop indefinitely)
+
         print("Game Initialized")
 
     def draw_background(self,background_image):
@@ -161,7 +163,7 @@ class Game():
             if not self.playing:
                 break
             
-            if self.UP_KEY and self.direction != Direction.DOWN:
+            if (self.UP_KEY or self.W_KEY) and self.direction != Direction.DOWN:
                 if last_move_final:
                     self.direction = Direction.UP
                     self.reset_keys()
@@ -169,7 +171,8 @@ class Game():
                 else:
                     self.reset_keys()
                     self.UP_KEY = True
-            if self.RIGHT_KEY and self.direction != Direction.LEFT:
+                    self.W_KEY = True
+            if (self.RIGHT_KEY or self.D_KEY) and self.direction != Direction.LEFT:
                 if last_move_final:
                     self.direction = Direction.RIGHT
                     self.reset_keys()
@@ -177,7 +180,8 @@ class Game():
                 else:
                     self.reset_keys()
                     self.RIGHT_KEY = True
-            if self.DOWN_KEY and self.direction != Direction.UP:
+                    self.D_KEY = True
+            if (self.DOWN_KEY or self.S_KEY) and self.direction != Direction.UP:
                 if last_move_final:
                     self.direction = Direction.DOWN
                     self.reset_keys()
@@ -185,7 +189,8 @@ class Game():
                 else:
                     self.reset_keys()
                     self.DOWN_KEY = True
-            if self.LEFT_KEY and self.direction != Direction.RIGHT:
+                    self.S_KEY = True
+            if (self.LEFT_KEY or self.A_KEY) and self.direction != Direction.RIGHT:
                 if last_move_final:
                     self.direction  = Direction.LEFT
                     self.reset_keys()
@@ -193,6 +198,7 @@ class Game():
                 else:
                     self.reset_keys()
                     self.LEFT_KEY = True
+                    self.A_KEY = True
             if self.ENTER_KEY:
                 #pass
                 self.ENTER_KEY = False
@@ -355,9 +361,17 @@ class Game():
                     self.LEFT_KEY = True
                 if event.key == pygame.K_RIGHT:
                     self.RIGHT_KEY = True
+                if event.key == pygame.K_w:
+                    self.W_KEY = True
+                if event.key == pygame.K_a:
+                    self.A_KEY = True
+                if event.key == pygame.K_s:
+                    self.S_KEY = True
+                if event.key == pygame.K_d:
+                    self.D_KEY = True
 
     def reset_keys(self):
-        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY = False, False, False, False, False, False, False
+        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY = False, False, False, False, False, False, False, False, False, False, False
 
     def draw_text(self, text, size, x, y, color):
         font = pygame.font.Font(self.font_name, size)

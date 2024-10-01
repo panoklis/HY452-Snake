@@ -123,14 +123,13 @@ class MainMenu(Menu):
 
     def check_input(self):
         self.move_cursor()
-        if self.game.ENTER_KEY:
+        if self.game.ENTER_KEY or self.game.RIGHT_KEY:
             if self.state == 'Start':
                 self.game.playing = True
             elif self.state == 'Highscores':
                 self.game.curr_menu = self.game.highscores
             elif self.state == 'Settings':
-                #self.game.curr_menu = self.game.settings
-                pass
+                self.game.curr_menu = self.game.settings
             elif self.state == 'Quit':
                 self.game.running = False
             self.run_display = False
@@ -236,3 +235,174 @@ class HighScores(Menu):
         self.leaderboard = self.game.server.get_leaderboard()
         self.total_entries = len(self.leaderboard)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
+
+class Settings(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = "Customize" #first option
+        self.labelx, self.labely = 185, 115
+        self.startx, self.starty = 225, 275
+        self.y_offset = 50
+        self.cur_x_offset = - 60
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            #visual representation of submenu
+            self.game.display.fill(self.game.DARK_BLUE)
+            #Debugging
+            #self.game.draw_text_outline('label   x,y: ' + str(self.labelx) + ',' + str(self.labely), 20, 0, 0, self.game.WHITE, self.game.BLACK, 2)
+            #self.game.draw_text_outline('options x,y: ' + str(self.startx) + ',' + str(self.starty), 20, 0,20, self.game.WHITE, self.game.BLACK, 2)
+            self.game.draw_text_outline('Settings', 60, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Customize', 40, self.startx, self.starty, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Server', 40, self.startx, self.starty + self.y_offset, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('User Profile', 40, self.startx, self.starty + self.y_offset*2, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Register', 40, self.startx, self.starty + self.y_offset*3, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Login', 40, self.startx, self.starty + self.y_offset*4, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.draw_cursor()
+            self.blit_screen()
+
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Customize':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
+                self.state = 'Server'
+            elif self.state == 'Server':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
+                self.state = 'User Profile'
+            elif self.state == 'User Profile':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
+                self.state = 'Register'
+            elif self.state == 'Register':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
+                self.state = 'Login'
+            elif self.state == 'Login':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Customize'
+        elif self.game.UP_KEY:
+            if self.state == 'Customize':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset*4)
+                self.state = 'Login'
+            elif self.state == 'Login':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
+                self.state = 'Register'
+            elif self.state == 'Register':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
+                self.state = 'User Profile'
+            elif self.state == 'User Profile':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
+                self.state = 'Server'
+            elif self.state == 'Server':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Customize'
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.main_menu
+            self.run_display = False
+        if self.game.ENTER_KEY:
+            #self.game.curr_menu = self.game.whatevermenu
+            #self.run_display = False
+            pass
+
+        #Debugging
+        #if self.game.W_KEY:
+        #    if self.state == 'Customize':
+        #        self.labely -= 5
+        #    if self.state == 'Server':
+        #        self.starty -= 5
+        #if self.game.S_KEY:
+        #    if self.state == 'Customize':
+        #        self.labely += 5
+        #    if self.state == 'Server':
+        #        self.starty += 5
+        #if self.game.A_KEY:
+        #    if self.state == 'Customize':
+        #        self.labelx -= 5
+        #    if self.state == 'Server':
+        #        self.startx -= 5
+        #if self.game.D_KEY:
+        #    if self.state == 'Customize':
+        #        self.labelx += 5
+        #    if self.state == 'Server':
+        #        self.startx += 5
+
+"""
+
+class Submenu(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = "Customize" #first option
+        self.startx, self.starty = 200, 200
+        self.y_offset = 80
+        self.cur_x_offset = - 60
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            #visual representation of submenu
+            self.draw_cursor()
+            self.blit_screen()
+
+    
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Top Option':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Bottom Option'
+            elif self.state == 'Bottom Option':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Top Option'
+        elif self.game.UP_KEY:
+            if self.state == 'Top Option':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Bottom Option'
+            elif self.state == 'Bottom Option':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Top Option'
+    
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.BACK_KEY
+            self.game.curr_menu = self.game.main_menu
+            self.run_display = False
+        if self.game.ENTER_KEY:
+            self.game.curr_menu = self.game.whatevermenu
+            self.run_display = False
+        if self.game.LEFT_KEY:
+            pass
+            #Do some left key stuff
+        if self.game.RIGHT_KEY:
+            pass
+            #Do some right key stuff
+        if self.game.UP_KEY:
+            pass
+            #Do some up key stuff
+            #Change state to lower menu option
+        if self.game.DOWN_KEY:
+            pass
+            #Do some down key stuff
+            #Change state to higher menu option
+
+"""
