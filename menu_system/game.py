@@ -69,6 +69,7 @@ class Game():
         self.BLUE = (0, 0, 255)
         self.RED = (255, 0, 0)
         self.WHITE = (255, 255, 255)
+        self.GREEN = (0, 255, 0)
         #text/outline colors
         self.LIGHT_YELLOW = pygame.Color(255, 255, 102)
         self.DARK_BROWN = pygame.Color(102, 51, 0)
@@ -90,6 +91,7 @@ class Game():
         self.highscores = HighScores(self)
         self.settings = Settings(self)
         self.customize = Customize(self)
+        self.custom_background = CustomBackground(self)
         self.curr_menu = self.main_menu
 
         # Load background music

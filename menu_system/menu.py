@@ -43,6 +43,22 @@ class Menu():
         pygame.display.update()
         self.game.reset_keys()
 
+    def popup_servererror(self):
+        #draw rect in display
+        pygame.draw.rect(self.game.display, self.game.BLACK, pygame.Rect(146, 296, 308, 208))
+        pygame.draw.rect(self.game.display, self.game.RED, pygame.Rect(150, 300, 300, 200))
+        pygame.draw.rect(self.game.display, self.game.DARK_BLUE, pygame.Rect(263, 410, 60, 50))
+        self.game.draw_text_outline('Server Error', 40, 170, 320, self.game.WHITE, self.game.BLACK, 2)
+        self.game.draw_text_outline('OK', 40, 270, 420, self.game.WHITE, self.game.BLACK, 2)
+
+    def popup_serversuccess(self):
+        #draw rect in display
+        pygame.draw.rect(self.game.display, self.game.BLACK, pygame.Rect(146, 296, 308, 208))
+        pygame.draw.rect(self.game.display, self.game.GREEN, pygame.Rect(150, 300, 300, 200))
+        pygame.draw.rect(self.game.display, self.game.DARK_BLUE, pygame.Rect(263, 410, 60, 50))
+        self.game.draw_text_outline('Success', 40, 225, 320, self.game.WHITE, self.game.BLACK, 2)
+        self.game.draw_text_outline('OK', 40, 270, 420, self.game.WHITE, self.game.BLACK, 2)
+
 class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -327,11 +343,14 @@ class Customize(Menu):
         self.state = "Custom Soundtrack" #first option
         self.labelx, self.labely = 160, 125
         self.startx, self.starty = 160, 300
-        self.y_offset = 80
+        self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
         self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+        self.server_success = False
+        self.server_error = False
 
     def display_menu(self):
         self.run_display = True
@@ -376,7 +395,13 @@ class Customize(Menu):
             self.game.curr_menu = self.game.settings
             self.run_display = False
         if self.game.ENTER_KEY or self.game.RIGHT_KEY:
-            pass
+            if self.state == 'Custom Soundtrack':
+                #self.game.curr_menu = self.game.custom_soundtrack
+                #self.run_display = False
+                pass
+            elif self.state == 'Custom Background':
+                self.game.curr_menu = self.game.custom_background
+                self.run_display = False
         #Debugging
         #if self.game.W_KEY:
         #    if self.state == 'Custom Soundtrack':
@@ -398,7 +423,81 @@ class Customize(Menu):
         #        self.labelx += 5
         #    if self.state == 'Custom Background':
         #        self.startx += 5
-"""
+
+class CustomBackground(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = 0 #first option
+        self.startx, self.starty = 70, 110
+        self.y_offset = 50
+        self.cur_x_offset = - 50
+        self.labelx, self.labely = 20, 40
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-hardline-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+        self.got_backgrounds = True
+        self.page = 1
+        self.page_size = 14
+
+    def display_menu(self):
+        self.got_backgrounds = False
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            self.game.display.fill(self.game.DARK_BLUE)
+            pygame.draw.line(self.game.display, self.game.LIGHT_YELLOW, (20, 90), (580, 90), 3)
+            if self.got_backgrounds:
+                self.draw_cursor()
+                self.game.draw_text_outline('Server Backgrounds', 40, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+                for i in range (1, 25):
+                    self.game.draw_text_outline('Background ' + str(i), 40, self.startx, self.starty + self.y_offset * (i-1), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            else:
+                self.game.draw_text_outline('Getting Backgrounds from server...', 30, self.labelx, self.labely+10, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.blit_screen()
+
+    
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state >= (self.page - 1) * self.page_size and self.state < (self.page_size * self.page) - 1: #to add: check if self.state < total number of backgrounds - 1
+                self.state += 1
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset * (self.state % self.page_size))
+        elif self.game.UP_KEY:
+            if self.state > (self.page - 1) * self.page_size and self.state <= (self.page_size * self.page) - 1:
+                self.state -= 1
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset * (self.state % self.page_size))
+    
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def check_input(self):
+        self.move_cursor()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.customize
+            self.run_display = False
+        if self.game.ENTER_KEY:
+            self.got_backgrounds = True
+            #self.game.curr_menu = self.game.whatevermenu
+            #self.run_display = False
+            pass
+        if self.game.LEFT_KEY:
+            pass
+            #Do some left key stuff
+        if self.game.RIGHT_KEY:
+            pass
+            #Do some right key stuff
+        if self.game.UP_KEY:
+            pass
+            #Do some up key stuff
+            #Change state to lower menu option
+        if self.game.DOWN_KEY:
+            pass
+            #Do some down key stuff
+            #Change state to higher menu option
+""" 
 
 class Submenu(Menu):
     def __init__(self, game):
