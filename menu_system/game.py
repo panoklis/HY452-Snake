@@ -31,8 +31,8 @@ class Game():
 
         #define game variables
         self.cell_size = 10
-        self.move_delay = 50
-        self.update_snake = 1
+        self.move_delay = 1
+        self.update_snake = time.time()
         self.food = [0, 0]
         self.new_food = True
         self.new_piece = [0, 0]
@@ -99,6 +99,17 @@ class Game():
         pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
         pygame.mixer.music.play(-1)  # Play the music (-1 means loop indefinitely)
 
+        #Load background image
+        self.background_image = pygame.image.load('../assets/images/backgrounds/background_image.jpg')
+        self.background_image = pygame.transform.scale(self.background_image, (self.DISPLAY_W, self.DISPLAY_H))
+        self.background_override = False
+
+        #Animated background
+        self.animated_background = False
+        self.animation_frames = []
+        self.animation_frame = 0
+        self.animation_total_frames = 0
+
         print("Game Initialized")
 
     def draw_background(self,background_image):
@@ -142,17 +153,21 @@ class Game():
         score_changed = False
 
         #Draw the game screen
-        background_image = pygame.image.load('../assets/images/backgrounds/background_image.jpg')
-        background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
 
         #background_image = pygame.image.load(self.server.get_background())
         #background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
-
+        
         self.game_over = False
         self.pause = False
 
+        anim_time = time.time()
+
         while self.playing:
-            self.draw_background(background_image)
+            if self.animated_background and time.time() - anim_time > 0.1:
+                anim_time = time.time()
+                self.animation_frame = (self.animation_frame + 1) % self.animation_total_frames
+                self.background_image = self.animation_frames[self.animation_frame]
+            self.draw_background(self.background_image)
             if time.time() - current_time > self.post_interval and score_changed:
                 current_time = time.time()
                 score_changed = False
@@ -256,8 +271,8 @@ class Game():
 
             if self.game_over == False and self.pause == False:
                 #update snake
-                if self.update_snake > delay:
-                    self.update_snake = 1
+                if time.time() - self.update_snake > 0.1 * delay:
+                    self.update_snake = time.time()
                     #first shift the positions of each snake piece back.
                     self.snake_pos = self.snake_pos[-1:] + self.snake_pos[:-1]
                     #now update the position of the head based on direction
@@ -327,7 +342,6 @@ class Game():
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
-            self.update_snake += 1    
 
     def reset_game(self):
         self.game_over = True
