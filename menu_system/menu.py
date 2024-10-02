@@ -287,6 +287,10 @@ class Settings(Menu):
             self.game.draw_text_outline('User Profile', 40, self.startx, self.starty + self.y_offset*2, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Register', 40, self.startx, self.starty + self.y_offset*3, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Login', 40, self.startx, self.starty + self.y_offset*4, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            if self.game.music_playing:
+                self.game.draw_text_outline('Music: ON', 40, self.startx, self.starty + self.y_offset*5, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            else:
+                self.game.draw_text_outline('Music: OFF', 40, self.startx, self.starty + self.y_offset*5, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.draw_cursor()
             self.blit_screen()
 
@@ -308,11 +312,17 @@ class Settings(Menu):
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
                 self.state = 'Login'
             elif self.state == 'Login':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
+                self.state = 'Music'
+            elif self.state == 'Music':
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
                 self.state = 'Customize'
         elif self.game.UP_KEY:
             if self.state == 'Customize':
-                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset*4)
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset*5)
+                self.state = 'Music'
+            elif self.state == 'Music':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
                 self.state = 'Login'
             elif self.state == 'Login':
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
@@ -346,6 +356,17 @@ class Settings(Menu):
             elif self.state == 'Register':
                 #self.game.curr_menu = self.game.register
                 pass
+            elif self.state == 'Login':
+                #self.game.curr_menu = self.game.login
+                pass
+            elif self.state == 'Music':
+                if self.game.music_playing:
+                    self.game.music_playing = False
+                    pygame.mixer.music.pause()
+                else:
+                    self.game.music_playing = True
+                    pygame.mixer.music.unpause()
+
 
 class Customize(Menu):
     def __init__(self, game):
