@@ -272,7 +272,7 @@ class Game():
 
             if self.game_over == False and self.pause == False:
                 #update snake
-                if time.time() - self.update_snake > 0.1 * delay:
+                if time.time() - self.update_snake > 0.05 * delay:
                     self.update_snake = time.time()
                     #first shift the positions of each snake piece back.
                     self.snake_pos = self.snake_pos[-1:] + self.snake_pos[:-1]
