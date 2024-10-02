@@ -12,3 +12,5 @@ Up, Down to navigate Menu
 Enter/Backspace to enter/exit submenu
 
 Left, Right to navigate Highscores submenu
+
+Press M to MUTE

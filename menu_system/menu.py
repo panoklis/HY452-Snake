@@ -83,6 +83,15 @@ class Menu():
         #Convert frames to pygame images
         frames = [pygame.image.fromstring(frame.tobytes(), frame.size, frame.mode) for frame in frames]
         return frames
+    
+    def check_universal(self):
+        if self.game.M_KEY:
+            if self.game.music_playing:
+                self.game.music_playing = False
+                pygame.mixer.music.pause()
+            else:
+                self.game.music_playing = True
+                pygame.mixer.music.unpause()
 
 class MainMenu(Menu):
     def __init__(self, game):
@@ -161,6 +170,7 @@ class MainMenu(Menu):
                 self.state = 'Start'
 
     def check_input(self):
+        self.check_universal()
         self.move_cursor()
         if self.game.ENTER_KEY or self.game.RIGHT_KEY:
             if self.state == 'Start':
@@ -233,6 +243,7 @@ class HighScores(Menu):
             self.blit_screen()
 
     def check_input(self):
+        self.check_universal()
         if self.game.BACK_KEY or self.game.ENTER_KEY:
             self.game.curr_menu = self.game.main_menu
             self.page = 1
@@ -317,6 +328,7 @@ class Settings(Menu):
                 self.state = 'Customize'
 
     def check_input(self):
+        self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY or self.game.LEFT_KEY:
             self.game.curr_menu = self.game.main_menu
@@ -388,6 +400,7 @@ class Customize(Menu):
         self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
 
     def check_input(self):
+        self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY or self.game.LEFT_KEY:
             self.game.curr_menu = self.game.settings
@@ -506,6 +519,7 @@ class CustomBackground(Menu):
         self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
 
     def check_input(self):
+        self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY or self.game.LEFT_KEY:
             self.game.curr_menu = self.game.customize
@@ -606,6 +620,7 @@ class Submenu(Menu):
         self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
 
     def check_input(self):
+        self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY
             self.game.curr_menu = self.game.main_menu

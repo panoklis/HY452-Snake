@@ -48,7 +48,7 @@ class Game():
         self.server = ScoreServer(self.server_url, self.player_name)
 
         self.running, self.playing = True, False
-        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY = False, False, False, False, False, False, False, False, False, False, False
+        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY, self.M_KEY = False, False, False, False, False, False, False, False, False, False, False, False
         #load font from ttf
         self.font_name = '../assets/fonts/Super Moods.ttf'
         self.def_font = pygame.font.Font(self.font_name, 20)    
@@ -98,6 +98,7 @@ class Game():
         pygame.mixer.music.load("../assets/sounds/background_music.mp3")
         pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
         pygame.mixer.music.play(-1)  # Play the music (-1 means loop indefinitely)
+        self.music_playing = True
 
         #Load background image
         self.background_image = pygame.image.load('../assets/images/backgrounds/background_image.jpg')
@@ -386,9 +387,11 @@ class Game():
                     self.S_KEY = True
                 if event.key == pygame.K_d:
                     self.D_KEY = True
+                if event.key == pygame.K_m:
+                    self.M_KEY = True
 
     def reset_keys(self):
-        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY = False, False, False, False, False, False, False, False, False, False, False
+        self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY, self.M_KEY = False, False, False, False, False, False, False, False, False, False, False, False
 
     def draw_text(self, text, size, x, y, color):
         font = pygame.font.Font(self.font_name, size)
