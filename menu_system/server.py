@@ -61,6 +61,33 @@ class ScoreServer():
         self.last_request_status = True
         return backgrounds
     
+    def get_soundtrack(self,name):
+        try:
+            response = requests.get(self.url + '/asset/soundtrack?name=' + name)
+            response.raise_for_status()
+        except RequestException as e:
+            print(f'Error: {e}')
+            self.last_request_status = False
+            return None
+        audio_data = response.text
+        audio = BytesIO(base64.b64decode(audio_data))
+        self.last_request_status = True
+        return audio
+
+    def get_soundtracks(self):
+        print('Getting soundtracks from server')
+        try:
+            response = requests.get(self.url + '/asset/soundtrack/all', timeout=15)
+            response.raise_for_status()
+        except RequestException as e:
+            print(f'Error: {e}')
+            self.last_request_status = False
+            return None
+        soundtracks = json.loads(response.json()['body'])
+        soundtracks = {entry['Key'] for entry in soundtracks if entry['Size'] > 0}
+        self.last_request_status = True
+        return soundtracks
+    
     def get_leaderboard(self):
         print('Getting leaderboard from server')
         try:

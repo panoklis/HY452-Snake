@@ -92,6 +92,7 @@ class Game():
         self.settings = Settings(self)
         self.customize = Customize(self)
         self.custom_background = CustomBackground(self)
+        self.custom_soundtrack = CustomSoundtrack(self)
         self.register = Register(self)
         self.login = Login(self)
         self.user_profile = UserProfile(self)

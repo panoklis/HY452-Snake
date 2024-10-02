@@ -423,8 +423,8 @@ class Customize(Menu):
             self.run_display = False
         if self.game.ENTER_KEY or self.game.RIGHT_KEY:
             if self.state == 'Custom Soundtrack':
-                #self.game.curr_menu = self.game.custom_soundtrack
-                #self.run_display = False
+                self.game.curr_menu = self.game.custom_soundtrack
+                self.run_display = False
                 pass
             elif self.state == 'Custom Background':
                 self.game.curr_menu = self.game.custom_background
@@ -574,6 +574,152 @@ class CustomBackground(Menu):
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_backgrounds = True
         print(self.backgrounds)
+
+class CustomSoundtrack(Menu):
+
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = 0 #first option
+        self.startx, self.starty = 70, 110
+        self.y_offset = 50
+        self.cur_x_offset = - 50
+        self.labelx, self.labely = 20, 40
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+        self.server_success = False
+        self.server_error = False
+
+        self.got_soundtracks = True
+        self.page = 1
+        self.page_size = 14
+
+        self.soundtracks = self.game.server.get_soundtracks()
+        self.total_entries = len(self.soundtracks)
+        self.total_pages = (self.total_entries -1) // self.page_size + 1
+        self.page_symbol = ''
+
+    def display_menu(self):
+        self.got_soundtracks = False
+        self.run_display = True
+        self.update_soundtracks()
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            if (not self.server_success) and (not self.server_error):
+                self.check_input()
+            elif self.server_success and self.game.ENTER_KEY:
+                self.server_success = False
+                self.run_display = False
+            elif self.server_error and self.game.ENTER_KEY:
+                self.server_error = False
+            self.game.display.fill(self.game.DARK_BLUE)
+            pygame.draw.line(self.game.display, self.game.LIGHT_YELLOW, (20, 90), (580, 90), 3)
+            if self.got_soundtracks:
+                self.draw_cursor()
+                if self.page > 1 and self.page < self.total_pages:
+                    self.page_symbol = '<< >>'
+                elif self.page == 1 and self.page < self.total_pages:
+                    self.page_symbol = '   >>'
+                elif self.page > 1 and self.page == self.total_pages:
+                    self.page_symbol = '<<   '
+                else:
+                    self.page_symbol = ''
+                self.game.draw_text_outline('Server Soundtracks' + '    ' + self.page_symbol, 40, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+                #print soundtracks from server
+                i = 0
+                for bg in self.soundtracks:
+                    if i >= (self.page - 1) * self.page_size and i < self.page * self.page_size:
+                        if i == self.state:
+                            self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.RED, self.game.DARK_BROWN, 2)
+                        else:
+                            self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+                    i += 1
+            else:
+                self.game.draw_text_outline('Getting soundtracks from server...', 30, self.labelx, self.labely+10, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            if self.server_success:
+                self.popup_serversuccess()
+            if self.server_error:
+                self.popup_servererror()
+            self.blit_screen()
+
+    
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state >= (self.page - 1) * self.page_size and self.state < (self.page_size * self.page) - 1 and self.state < self.total_entries - 1:
+                self.state += 1
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset * (self.state % self.page_size))
+        elif self.game.UP_KEY:
+            if self.state > (self.page - 1) * self.page_size and self.state <= (self.page_size * self.page) - 1:
+                self.state -= 1
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset * (self.state % self.page_size))
+    
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def check_input(self):
+        self.check_universal()
+        self.move_cursor()
+        if self.game.BACK_KEY:
+            self.game.curr_menu = self.game.customize
+            self.run_display = False
+        if self.game.ENTER_KEY:
+            i = 0
+            for bg in self.soundtracks:
+                if i == self.state: 
+                    # bg is of the form 'soundtracks/your-soundtrack.gif'
+                    # we need to remove the 'soundtracks/' part
+                    bg = bg.split('/')[1]
+                    soundtrack = self.game.server.get_soundtrack(bg)
+                    if self.game.server.last_request_status == False:
+                        self.server_error = True
+                        break
+                    #find out if image is gif or not
+                    if bg[-3:] == 'gif':
+                        #load gif frames
+                        frames = self.load_gif_frames(soundtrack)
+                        self.game.animated_soundtrack = True
+                        self.game.animation_frames = frames
+                        self.game.animation_total_frames = len(frames)
+                        for i in range(self.game.animation_total_frames):
+                            self.game.animation_frames[i] = pygame.transform.scale(self.game.animation_frames[i], (self.game.DISPLAY_W, self.game.DISPLAY_H))
+                    else:
+                        self.game.animated_soundtrack = False
+                        self.game.soundtrack_image = pygame.image.load(soundtrack).convert_alpha()
+                        self.game.soundtrack_image = pygame.transform.scale(self.game.soundtrack_image, (self.game.DISPLAY_W, self.game.DISPLAY_H))
+
+                    self.game.soundtrack_override = True
+                    self.game.curr_menu = self.game.main_menu
+                    #self.run_display = False
+                    self.server_success = True
+                    break
+                i += 1
+        if self.game.RIGHT_KEY:
+            if self.page < self.total_pages:
+                self.page += 1
+                self.state = (self.page - 1) * self.page_size
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+        if self.game.LEFT_KEY:
+            if self.page > 1:
+                self.page -= 1
+                self.state = (self.page - 1) * self.page_size
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+
+    def update_soundtracks(self):
+        thread = threading.Thread(target=self._update_soundtracks_thread)
+        thread.start()
+
+    def _update_soundtracks_thread(self):
+        self.soundtracks = self.game.server.get_soundtracks()
+        if self.game.server.last_request_status == False:
+            self.server_error = True
+            return
+        self.total_entries = len(self.soundtracks)
+        self.total_pages = (self.total_entries -1) // self.page_size + 1
+        self.got_soundtracks = True
+        print(self.soundtracks)
 
 class Register(Menu):
     def __init__(self, game):
