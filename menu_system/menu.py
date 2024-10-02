@@ -716,20 +716,9 @@ class CustomSoundtrack(Menu):
                     if self.game.server.last_request_status == False:
                         self.server_error = True
                         break
-                    #find out if image is gif or not
-                    if bg[-3:] == 'gif':
-                        #load gif frames
-                        frames = self.load_gif_frames(soundtrack)
-                        self.game.animated_soundtrack = True
-                        self.game.animation_frames = frames
-                        self.game.animation_total_frames = len(frames)
-                        for i in range(self.game.animation_total_frames):
-                            self.game.animation_frames[i] = pygame.transform.scale(self.game.animation_frames[i], (self.game.DISPLAY_W, self.game.DISPLAY_H))
-                    else:
-                        self.game.animated_soundtrack = False
-                        self.game.soundtrack_image = pygame.image.load(soundtrack).convert_alpha()
-                        self.game.soundtrack_image = pygame.transform.scale(self.game.soundtrack_image, (self.game.DISPLAY_W, self.game.DISPLAY_H))
-
+                    #set soundtrack
+                    pygame.mixer.music.load(soundtrack)
+                    pygame.mixer.music.play(-1)
                     self.game.soundtrack_override = True
                     self.game.curr_menu = self.game.main_menu
                     #self.run_display = False
@@ -948,7 +937,7 @@ class Login(Menu):
 
     def display_menu(self):
         self.username = self.game.player_name
-        self.password = self.game.player_password
+        self.password = self.game.password
         self.run_display = True
         while self.run_display:
             self.events = self.game.check_events()
