@@ -31,7 +31,7 @@ class Game():
 
         #define game variables
         self.cell_size = 10
-        self.move_delay = 1
+        self.game_speed = 5
         self.update_snake = time.time()
         self.food = [0, 0]
         self.new_food = True
@@ -45,7 +45,8 @@ class Game():
         self.gameover_interval = 2
         self.server_url = configs['server_url']
         self.player_name = configs['player_name']
-        self.server = ScoreServer(self.server_url, self.player_name)
+        self.password = configs['password']
+        self.server = ScoreServer(self.server_url)
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY, self.M_KEY = False, False, False, False, False, False, False, False, False, False, False, False
@@ -234,9 +235,9 @@ class Game():
                     
             key = pygame.key.get_pressed()
             if key[pygame.K_SPACE]:
-                delay = self.move_delay / 5
+                speed = self.game_speed * 5
             else:
-                delay = self.move_delay
+                speed = self.game_speed
             
             #create food
             if self.new_food == True:
@@ -276,7 +277,7 @@ class Game():
 
             if self.game_over == False and self.pause == False:
                 #update snake
-                if time.time() - self.update_snake > 0.05 * delay:
+                if time.time() - self.update_snake > 0.5 / speed:
                     self.update_snake = time.time()
                     #first shift the positions of each snake piece back.
                     self.snake_pos = self.snake_pos[-1:] + self.snake_pos[:-1]

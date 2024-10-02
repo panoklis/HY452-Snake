@@ -8,9 +8,8 @@ import hashlib
 
 class ScoreServer():
 
-    def __init__(self, url, name):
+    def __init__(self, url):
         self.url = url
-        self.name = name
         self.last_request_status = None
 
     def post_score(self, score, name):
