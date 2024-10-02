@@ -571,6 +571,9 @@ class CustomBackground(Menu):
         thread.start()
     def _update_backgrounds_thread(self):
         self.backgrounds = self.game.server.get_backgrounds()
+        if self.game.server.last_request_status == False:
+            self.server_error = True
+            return
         self.total_entries = len(self.backgrounds)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_backgrounds = True

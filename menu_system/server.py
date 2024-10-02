@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import RequestException
 import json
 import base64
 from io import BytesIO
@@ -33,33 +34,42 @@ class ScoreServer():
             return False
 
     def get_background(self,name):
-        response = requests.get(self.url + '/asset/background?name=' + name)
+        try:
+            response = requests.get(self.url + '/asset/background?name=' + name)
+            response.raise_for_status()
+        except RequestException as e:
+            print(f'Error: {e}')
+            self.last_request_status = False
+            return None
         image_data = response.text
         image = BytesIO(base64.b64decode(image_data))
-        if response.status_code == 200:
-            self.last_request_status = True
-        else:
-            self.last_request_status = False
+        self.last_request_status = True
         return image
     
     def get_backgrounds(self):
         print('Getting backgrounds from server')
-        response = requests.get(self.url + '/asset/background/all')
+        try:
+            response = requests.get(self.url + '/asset/background/all', timeout=5)
+            response.raise_for_status()
+        except RequestException as e:
+            print(f'Error: {e}')
+            self.last_request_status = False
+            return None
         backgrounds = json.loads(response.json()['body'])
         backgrounds = {entry['Key'] for entry in backgrounds if entry['Size'] > 0}
-        if response.status_code == 200:
-            self.last_request_status = True
-        else:
-            self.last_request_status = False
+        self.last_request_status = True
         return backgrounds
     
     def get_leaderboard(self):
         print('Getting leaderboard from server')
-        response = requests.get(self.url + '/leaderboard')
+        try:
+            response = requests.get(self.url + '/leaderboard')
+            response.raise_for_status()
+        except RequestException as e:
+            print(f'Error: {e}')
+            self.last_request_status = False
+            return None
         leaderboard = json.loads(response.json()['body'])
         leaderboard = {entry['userID']: entry['score'] for entry in leaderboard}
-        if response.status_code == 200:
-            self.last_request_status = True
-        else:
-            self.last_request_status = False
+        self.last_request_status = True
         return leaderboard
