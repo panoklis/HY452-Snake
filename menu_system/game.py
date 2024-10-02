@@ -362,6 +362,7 @@ class Game():
         self.score = 0
 
     def check_events(self):
+        events = []
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running, self.playing = False, False
@@ -391,6 +392,8 @@ class Game():
                     self.D_KEY = True
                 if event.key == pygame.K_m:
                     self.M_KEY = True
+            events.append(event)
+        return events
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY, self.M_KEY = False, False, False, False, False, False, False, False, False, False, False, False

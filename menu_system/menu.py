@@ -588,11 +588,14 @@ class Register(Menu):
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
         self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
+        self.username, self.password, self.repeat_password, self.email, self.pass_redact, self.repeat_pass_redact = '', '', '', '', '', ''
+        self.events = []
 
     def display_menu(self):
         self.run_display = True
         while self.run_display:
-            self.game.check_events()
+            self.events = self.game.check_events()
+            self.check_textinput()
             if self.game.running == False:
                 return
             self.check_input()
@@ -605,10 +608,12 @@ class Register(Menu):
             #self.game.draw_text_outline('OK   x,y: ' + str(self.okx) + ',' + str(self.oky), 20, 0, 0, self.game.WHITE, self.game.BLACK, 1)
 
             self.game.draw_text_outline('Register', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
-            self.game.draw_text_outline('Username: ', 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
-            self.game.draw_text_outline('Password: ', 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
-            self.game.draw_text_outline('Repeat Password: ', 25, self.startx, self.starty + self.y_offset*2, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
-            self.game.draw_text_outline('Email: ', 25, self.startx, self.starty + self.y_offset*3, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Username: ' + self.username, 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.pass_redact = ' *' * len(self.password)
+            self.game.draw_text_outline('Password: ' + self.pass_redact, 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.repeat_pass_redact = ' *' * len(self.repeat_password)
+            self.game.draw_text_outline('Repeat Password: ' + self.repeat_pass_redact, 25, self.startx, self.starty + self.y_offset*2, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Email: ' + self.email, 25, self.startx, self.starty + self.y_offset*3, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('OK', 40, self.okx, self.oky, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.draw_cursor()
             self.blit_screen()
@@ -653,7 +658,10 @@ class Register(Menu):
     def check_input(self):
         self.check_universal()
         self.move_cursor()
-        if self.game.BACK_KEY or self.game.LEFT_KEY:
+        if self.game.BACK_KEY and self.state == 'OK':
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
+        if self.game.LEFT_KEY:
             self.game.curr_menu = self.game.settings
             self.run_display = False
         if self.game.ENTER_KEY:
@@ -681,6 +689,29 @@ class Register(Menu):
         #if self.game.D_KEY:
         #    self.okx += 5
 
+
+    def check_textinput(self):
+        for event in self.events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    if self.state == 'Username':
+                        self.username = self.username[:-1]
+                    elif self.state == 'Password':
+                        self.password = self.password[:-1]
+                    elif self.state == 'Repeat Password':
+                        self.repeat_password = self.repeat_password[:-1]
+                    elif self.state == 'Email':
+                        self.email = self.email[:-1]
+                elif (not event.key == pygame.K_RETURN) and (not event.key == pygame.K_KP_ENTER):
+                    if self.state == 'Username':
+                        self.username += event.unicode
+                    elif self.state == 'Password':
+                        self.password += event.unicode
+                    elif self.state == 'Repeat Password':
+                        self.repeat_password += event.unicode
+                    elif self.state == 'Email':
+                        self.email += event.unicode
+
 class Login(Menu):
     def __init__(self,game):
         Menu.__init__(self, game)
@@ -693,11 +724,14 @@ class Login(Menu):
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
         self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
+        self.username, self.password, self.pass_redact = '', '', ''
+        self.events = []
 
     def display_menu(self):
         self.run_display = True
         while self.run_display:
-            self.game.check_events()
+            self.events = self.game.check_events()
+            self.check_textinput()
             if self.game.running == False:
                 return
             self.check_input()
@@ -707,8 +741,9 @@ class Login(Menu):
             self.game.display.fill(self.game.GREEN)
 
             self.game.draw_text_outline('Register', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
-            self.game.draw_text_outline('Username: ', 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
-            self.game.draw_text_outline('Password: ', 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Username: ' + self.username, 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.pass_redact = ' *' * len(self.password)
+            self.game.draw_text_outline('Password: ' + self.pass_redact, 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('OK', 40, self.okx, self.oky, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.draw_cursor()
             self.blit_screen()
@@ -741,7 +776,10 @@ class Login(Menu):
     def check_input(self):
         self.check_universal()
         self.move_cursor()
-        if self.game.BACK_KEY or self.game.LEFT_KEY:
+        if self.game.BACK_KEY and self.state == 'OK':
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
+        if self.game.LEFT_KEY:
             self.game.curr_menu = self.game.settings
             self.run_display = False
         if self.game.ENTER_KEY:
@@ -753,6 +791,20 @@ class Login(Menu):
                 self.move_cursor()
             elif self.state == 'OK':
                 pass
+
+    def check_textinput(self):
+        for event in self.events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    if self.state == 'Username':
+                        self.username = self.username[:-1]
+                    elif self.state == 'Password':
+                        self.password = self.password[:-1]
+                elif (not event.key == pygame.K_RETURN) and (not event.key == pygame.K_KP_ENTER):
+                    if self.state == 'Username':
+                        self.username += event.unicode
+                    elif self.state == 'Password':
+                        self.password += event.unicode
 
 """ 
 
