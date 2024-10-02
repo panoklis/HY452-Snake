@@ -347,18 +347,17 @@ class Settings(Menu):
                 self.run_display = False
             elif self.state == 'Server':
                 #self.game.curr_menu = self.game.server_menu
+                #self.run_display = False
                 pass
             elif self.state == 'User Profile':
-                #self.game.curr_menu = self.game.user_profile
-                pass
+                self.game.curr_menu = self.game.user_profile
+                self.run_display = False
             elif self.state == 'Register':
                 self.game.curr_menu = self.game.register
                 self.run_display = False
-                pass
             elif self.state == 'Login':
                 self.game.curr_menu = self.game.login
                 self.run_display = False
-                pass
             elif self.state == 'Music':
                 if self.game.music_playing:
                     self.game.music_playing = False
@@ -708,6 +707,7 @@ class Register(Menu):
                         self.error = True
                     else:
                         self.error_text = 'Registration successful'
+                        self.game.player_name = self.username
                         self.error_color = self.game.GREEN
                         self.error_time = time.time()
                         self.error = True
@@ -843,6 +843,35 @@ class Login(Menu):
                         self.repeat_password += event.unicode
                     elif self.state == 'Email' and len(self.email) < 30:
                         self.email += event.unicode
+
+class UserProfile(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.labelx, self.labely = 140, 115
+        self.startx, self.starty = 55, 270
+        self.username, self.email, self.highscore = '', '', ''
+
+    def display_menu(self):
+        self.highscore = self.game.highscore
+        self.username = self.game.player_name
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            self.game.display.fill(self.game.GREEN)
+            self.game.draw_text_outline('User Profile', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Username: ' + self.username, 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Email: ' + self.email, 25, self.startx, self.starty + 50, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Highscore: ' + str(self.highscore), 25, self.startx, self.starty + 100, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.blit_screen()
+
+    def check_input(self):
+        self.check_universal()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
 
 """ 
 

@@ -13,9 +13,9 @@ class ScoreServer():
         self.name = name
         self.last_request_status = None
 
-    def post_score(self, score):
+    def post_score(self, score, name):
         data = {
-            'userID': self.name,
+            'userID': name,
             'score': score
         }
         post_thread = threading.Thread(target=self._post_score_thread, args=(data,))

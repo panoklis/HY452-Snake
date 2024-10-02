@@ -94,6 +94,7 @@ class Game():
         self.custom_background = CustomBackground(self)
         self.register = Register(self)
         self.login = Login(self)
+        self.user_profile = UserProfile(self)
         self.curr_menu = self.main_menu
 
         # Load background music
@@ -174,7 +175,7 @@ class Game():
             if time.time() - current_time > self.post_interval and score_changed:
                 current_time = time.time()
                 score_changed = False
-                self.server.post_score(self.score)
+                self.server.post_score(self.score, self.player_name)
                 
             if score_changed:
                 if self.score > self.highscore:
@@ -333,7 +334,7 @@ class Game():
                 if time.time() - endgame_time > self.gameover_interval:
                     #reset game variables
                     print("Game Over")
-                    self.server.post_score(self.score)
+                    self.server.post_score(self.score, self.player_name)
                     self.reset_game()
                     self.playing = False
 
