@@ -591,6 +591,12 @@ class Register(Menu):
         self.username, self.password, self.repeat_password, self.email, self.pass_redact, self.repeat_pass_redact = '', '', '', '', '', ''
         self.events = []
 
+        self.error_text = ''
+        self.error_text_x, self.error_text_y = 100, 600
+        self.error_time = time.time()
+        self.error_color = self.game.RED
+        self.error = False
+
     def display_menu(self):
         self.run_display = True
         while self.run_display:
@@ -615,6 +621,10 @@ class Register(Menu):
             self.game.draw_text_outline('Repeat Password: ' + self.repeat_pass_redact, 25, self.startx, self.starty + self.y_offset*2, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('Email: ' + self.email, 25, self.startx, self.starty + self.y_offset*3, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('OK', 40, self.okx, self.oky, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            if self.error and time.time() - self.error_time < 3:
+                self.game.draw_text_outline(self.error_text, 30, self.error_text_x, self.error_text_y, self.error_color, self.game.BLACK, 2)
+            else:
+                self.error = False
             self.draw_cursor()
             self.blit_screen()
 
@@ -656,7 +666,8 @@ class Register(Menu):
                 self.state = 'Username'
 
     def check_input(self):
-        self.check_universal()
+        #not applicable, conflict with text input
+        #self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY and self.state == 'OK':
             self.game.curr_menu = self.game.settings
@@ -678,7 +689,29 @@ class Register(Menu):
                 self.game.DOWN_KEY = True
                 self.move_cursor()
             elif self.state == 'OK':
-                pass
+                if self.username == '' or self.password == '' or self.repeat_password == '' or self.email == '':
+                    self.error_text = 'Please fill in all fields'
+                    self.error_color = self.game.RED
+                    self.error_time = time.time()
+                    self.error = True
+                elif self.password != self.repeat_password:
+                    self.error_text = 'Passwords do not match'
+                    self.error_color = self.game.RED
+                    self.error_time = time.time()
+                    self.error = True
+                else:
+                    self.game.server.register_user(self.username, self.password, self.email)
+                    if self.game.server.last_request_status == False:
+                        self.error_text = 'Registration failed'
+                        self.error_color = self.game.RED
+                        self.error_time = time.time()
+                        self.error = True
+                    else:
+                        self.error_text = 'Registration successful'
+                        self.error_color = self.game.GREEN
+                        self.error_time = time.time()
+                        self.error = True
+                    
         #Debugging
         #if self.game.W_KEY:
         #    self.oky -= 5
@@ -702,21 +735,21 @@ class Register(Menu):
                         self.repeat_password = self.repeat_password[:-1]
                     elif self.state == 'Email':
                         self.email = self.email[:-1]
-                elif (not event.key == pygame.K_RETURN) and (not event.key == pygame.K_KP_ENTER):
-                    if self.state == 'Username':
+                elif (not event.key == pygame.K_RETURN) and (not event.key == pygame.K_KP_ENTER) and (not event.key == pygame.K_TAB):
+                    if self.state == 'Username' and len(self.username) < 20:
                         self.username += event.unicode
-                    elif self.state == 'Password':
+                    elif self.state == 'Password' and len(self.password) < 20:
                         self.password += event.unicode
-                    elif self.state == 'Repeat Password':
+                    elif self.state == 'Repeat Password' and len(self.repeat_password) < 20:
                         self.repeat_password += event.unicode
-                    elif self.state == 'Email':
+                    elif self.state == 'Email' and len(self.email) < 30:
                         self.email += event.unicode
 
 class Login(Menu):
     def __init__(self,game):
         Menu.__init__(self, game)
         self.state = "Username"
-        self.labelx, self.labely = 190, 115
+        self.labelx, self.labely = 210, 115
         self.startx, self.starty = 55, 270
         self.okx, self.oky = 280, 650
         self.y_offset = 50
@@ -740,7 +773,7 @@ class Login(Menu):
 
             self.game.display.fill(self.game.GREEN)
 
-            self.game.draw_text_outline('Register', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Login', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('Username: ' + self.username, 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.pass_redact = ' *' * len(self.password)
             self.game.draw_text_outline('Password: ' + self.pass_redact, 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
@@ -774,7 +807,8 @@ class Login(Menu):
                 self.state = 'Username'
 
     def check_input(self):
-        self.check_universal()
+        #not applicable, conflict with text input
+        #self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY and self.state == 'OK':
             self.game.curr_menu = self.game.settings
@@ -800,11 +834,15 @@ class Login(Menu):
                         self.username = self.username[:-1]
                     elif self.state == 'Password':
                         self.password = self.password[:-1]
-                elif (not event.key == pygame.K_RETURN) and (not event.key == pygame.K_KP_ENTER):
-                    if self.state == 'Username':
+                elif (not event.key == pygame.K_RETURN) and (not event.key == pygame.K_KP_ENTER) and (not event.key == pygame.K_TAB):
+                    if self.state == 'Username' and len(self.username) < 20:
                         self.username += event.unicode
-                    elif self.state == 'Password':
+                    elif self.state == 'Password' and len(self.password) < 20:
                         self.password += event.unicode
+                    elif self.state == 'Repeat Password' and len(self.repeat_password) < 20:
+                        self.repeat_password += event.unicode
+                    elif self.state == 'Email' and len(self.email) < 30:
+                        self.email += event.unicode
 
 """ 
 

@@ -4,6 +4,7 @@ import json
 import base64
 from io import BytesIO
 import threading
+import hashlib
 
 class ScoreServer():
 
@@ -73,3 +74,25 @@ class ScoreServer():
         leaderboard = {entry['userID']: entry['score'] for entry in leaderboard}
         self.last_request_status = True
         return leaderboard
+
+    def register_user(self, name, password, email):
+        data = {
+            'Action': 'Register',
+            'Username': name,
+            'Email': email,
+            'PasswordHash': hashlib.sha1(password.encode()).hexdigest()
+        }
+        try:
+            response = requests.post(self.url + '/register', json=data)
+            response.raise_for_status()
+        except RequestException as e:
+            print("Error registering user")
+            print(f'Error: {e}')
+            print(f'Error: {response.text}')
+            self.last_request_status = False
+            return False
+
+        print("User registered successfully")
+        print(f'Response: {response.text}')
+        self.last_request_status = True
+        return True
