@@ -96,3 +96,24 @@ class ScoreServer():
         print(f'Response: {response.text}')
         self.last_request_status = True
         return True
+
+    def login_user(self, name, password):
+        data = {
+            'Action': 'Login',
+            'Username': name,
+            'PasswordHash': hashlib.sha1(password.encode()).hexdigest()
+        }
+        try:
+            response = requests.post(self.url + '/login', json=data)
+            response.raise_for_status()
+        except RequestException as e:
+            print("Error logging in")
+            print(f'Error: {e}')
+            print(f'Error: {response.text}')
+            self.last_request_status = False
+            return False
+
+        print("User logged in successfully")
+        print(f'Response: {response.text}')
+        self.last_request_status = True
+        return True
