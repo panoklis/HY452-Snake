@@ -352,7 +352,8 @@ class Settings(Menu):
                 #self.game.curr_menu = self.game.user_profile
                 pass
             elif self.state == 'Register':
-                #self.game.curr_menu = self.game.register
+                self.game.curr_menu = self.game.register
+                self.run_display = False
                 pass
             elif self.state == 'Login':
                 #self.game.curr_menu = self.game.login
@@ -388,9 +389,6 @@ class Customize(Menu):
                 return
             self.check_input()
             self.game.display.fill(self.game.DARK_BLUE)
-            #Debugging
-            #self.game.draw_text_outline('label   x,y: ' + str(self.labelx) + ',' + str(self.labely), 20, 0, 0, self.game.WHITE, self.game.BLACK, 1)
-            #self.game.draw_text_outline('options x,y: ' + str(self.startx) + ',' + str(self.starty), 20, 0,20, self.game.WHITE, self.game.BLACK, 1)
             self.game.draw_text_outline('Customize', 60, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Custom Soundtrack', 40, self.startx, self.starty, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Custom Background', 40, self.startx, self.starty + self.y_offset, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
@@ -431,27 +429,6 @@ class Customize(Menu):
             elif self.state == 'Custom Background':
                 self.game.curr_menu = self.game.custom_background
                 self.run_display = False
-        #Debugging
-        #if self.game.W_KEY:
-        #    if self.state == 'Custom Soundtrack':
-        #        self.labely -= 5
-        #    if self.state == 'Custom Background':
-        #        self.starty -= 5
-        #if self.game.S_KEY:
-        #    if self.state == 'Custom Soundtrack':
-        #        self.labely += 5
-        #    if self.state == 'Custom Background':
-        #        self.starty += 5
-        #if self.game.A_KEY:
-        #    if self.state == 'Custom Soundtrack':
-        #        self.labelx -= 5
-        #    if self.state == 'Custom Background':
-        #        self.startx -= 5
-        #if self.game.D_KEY:
-        #    if self.state == 'Custom Soundtrack':
-        #        self.labelx += 5
-        #    if self.state == 'Custom Background':
-        #        self.startx += 5
 
 class CustomBackground(Menu):
 
@@ -590,10 +567,6 @@ class CustomBackground(Menu):
         thread.start()
     def _update_backgrounds_thread(self):
         self.backgrounds = self.game.server.get_backgrounds()
-        #add a few mock backgrounds to set
-        #append doesnt work, instead do this
-        for i in range(180):
-            self.backgrounds.add(f'backgrounds/mock_background' + str(i) + '.gif')
         if self.game.server.last_request_status == False:
             self.server_error = True
             return
@@ -601,6 +574,111 @@ class CustomBackground(Menu):
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_backgrounds = True
         print(self.backgrounds)
+
+class Register(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = "Username" #first option
+        self.labelx, self.labely = 190, 115
+        self.startx, self.starty = 55, 270
+        self.okx, self.oky = 280, 650
+        self.y_offset = 50
+        self.cur_x_offset = - 40
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            
+            #INSERT extra local event handler, for text completion
+
+            self.game.display.fill(self.game.GREEN)
+            
+            #Debugging
+            #self.game.draw_text_outline('OK   x,y: ' + str(self.okx) + ',' + str(self.oky), 20, 0, 0, self.game.WHITE, self.game.BLACK, 1)
+
+            self.game.draw_text_outline('Register', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Username: ', 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Password: ', 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Repeat Password: ', 25, self.startx, self.starty + self.y_offset*2, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Email: ', 25, self.startx, self.starty + self.y_offset*3, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('OK', 40, self.okx, self.oky, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.draw_cursor()
+            self.blit_screen()
+
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Username':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Password'
+            elif self.state == 'Password':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset*2)
+                self.state = 'Repeat Password'
+            elif self.state == 'Repeat Password':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset*3)
+                self.state = 'Email'
+            elif self.state == 'Email':
+                self.cursor_rect.topleft = (self.okx + self.cur_x_offset, self.oky)
+                self.state = 'OK'
+            elif self.state == 'OK':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Username'
+        elif self.game.UP_KEY:
+            if self.state == 'Username':
+                self.cursor_rect.topleft = (self.okx + self.cur_x_offset, self.oky)
+                self.state = 'OK'
+            elif self.state == 'OK':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset*3)
+                self.state = 'Email'
+            elif self.state == 'Email':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset*2)
+                self.state = 'Repeat Password'
+            elif self.state == 'Repeat Password':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Password'
+            elif self.state == 'Password':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Username'
+
+    def check_input(self):
+        self.check_universal()
+        self.move_cursor()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
+        if self.game.ENTER_KEY:
+            if self.state == 'Username':
+                self.game.DOWN_KEY = True
+                self.move_cursor()
+            elif self.state == 'Password':
+                self.game.DOWN_KEY = True
+                self.move_cursor()
+            elif self.state == 'Repeat Password':
+                self.game.DOWN_KEY = True
+                self.move_cursor()
+            elif self.state == 'Email':
+                self.game.DOWN_KEY = True
+                self.move_cursor()
+            elif self.state == 'OK':
+                pass
+        #Debugging
+        #if self.game.W_KEY:
+        #    self.oky -= 5
+        #if self.game.S_KEY:
+        #    self.oky += 5
+        #if self.game.A_KEY:
+        #    self.okx -= 5
+        #if self.game.D_KEY:
+        #    self.okx += 5
 
 """ 
 

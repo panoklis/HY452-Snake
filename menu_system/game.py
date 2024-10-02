@@ -92,6 +92,8 @@ class Game():
         self.settings = Settings(self)
         self.customize = Customize(self)
         self.custom_background = CustomBackground(self)
+        self.register = Register(self)
+        #self.login = Login(self)
         self.curr_menu = self.main_menu
 
         # Load background music
