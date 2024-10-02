@@ -356,7 +356,8 @@ class Settings(Menu):
                 self.run_display = False
                 pass
             elif self.state == 'Login':
-                #self.game.curr_menu = self.game.login
+                self.game.curr_menu = self.game.login
+                self.run_display = False
                 pass
             elif self.state == 'Music':
                 if self.game.music_playing:
@@ -679,6 +680,79 @@ class Register(Menu):
         #    self.okx -= 5
         #if self.game.D_KEY:
         #    self.okx += 5
+
+class Login(Menu):
+    def __init__(self,game):
+        Menu.__init__(self, game)
+        self.state = "Username"
+        self.labelx, self.labely = 190, 115
+        self.startx, self.starty = 55, 270
+        self.okx, self.oky = 280, 650
+        self.y_offset = 50
+        self.cur_x_offset = - 40
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            
+            #INSERT extra local event handler, for text completion
+
+            self.game.display.fill(self.game.GREEN)
+
+            self.game.draw_text_outline('Register', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Username: ', 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('Password: ', 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.game.draw_text_outline('OK', 40, self.okx, self.oky, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            self.draw_cursor()
+            self.blit_screen()
+
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Username':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Password'
+            elif self.state == 'Password':
+                self.cursor_rect.topleft = (self.okx + self.cur_x_offset, self.oky)
+                self.state = 'OK'
+            elif self.state == 'OK':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Username'
+        elif self.game.UP_KEY:
+            if self.state == 'Username':
+                self.cursor_rect.topleft = (self.okx + self.cur_x_offset, self.oky)
+                self.state = 'OK'
+            elif self.state == 'OK':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Password'
+            elif self.state == 'Password':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Username'
+
+    def check_input(self):
+        self.check_universal()
+        self.move_cursor()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
+        if self.game.ENTER_KEY:
+            if self.state == 'Username':
+                self.game.DOWN_KEY = True
+                self.move_cursor()
+            elif self.state == 'Password':
+                self.game.DOWN_KEY = True
+                self.move_cursor()
+            elif self.state == 'OK':
+                pass
 
 """ 
 
