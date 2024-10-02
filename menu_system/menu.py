@@ -186,14 +186,19 @@ class MainMenu(Menu):
 class HighScores(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.leaderboard = self.game.server.get_leaderboard()
         self.leaderboard_get_time = time.time()
+        self.leaderboard = self.game.server.get_leaderboard()
+        if self.game.server.last_request_status == False:
+            self.leaderboard = {}
+            self.total_entries = 0
+            self.total_pages = 0
+        else:
+            self.total_entries = len(self.leaderboard)
+            self.total_pages = (self.total_entries -1) // self.page_size + 1
         #current leaderboard page
         self.page = 1
         #number of entries per page
         self.page_size = 24
-        self.total_entries = len(self.leaderboard)
-        self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.interval = 5
         self.page_symbol = '[     ]'
 
@@ -256,8 +261,13 @@ class HighScores(Menu):
 
     def _update_leaderboard_thread(self):
         self.leaderboard = self.game.server.get_leaderboard()
-        self.total_entries = len(self.leaderboard)
-        self.total_pages = (self.total_entries -1) // self.page_size + 1
+        if self.game.server.last_request_status == False:
+            self.leaderboard = {}
+            self.total_entries = 0
+            self.total_pages = 0
+        else:
+            self.total_entries = len(self.leaderboard)
+            self.total_pages = (self.total_entries -1) // self.page_size + 1
 
 class Settings(Menu):
     def __init__(self, game):
@@ -372,9 +382,8 @@ class Settings(Menu):
                 self.game.curr_menu = self.game.customize
                 self.run_display = False
             elif self.state == 'Server':
-                #self.game.curr_menu = self.game.server_menu
-                #self.run_display = False
-                pass
+                self.game.curr_menu = self.game.server_menu
+                self.run_display = False
             elif self.state == 'User Profile':
                 self.game.curr_menu = self.game.user_profile
                 self.run_display = False
@@ -403,8 +412,79 @@ class Settings(Menu):
                 if self.speed_cursor.width < 200:
                     self.speed_cursor.width += 20
                     self.game.game_speed += 1
-                #self.game.curr_menu = self.game.game_speed
-                #self.run_display = False
+
+class ServerMenu(Menu):
+    def __init__(self,game):
+        Menu.__init__(self, game)
+        self.state = "Default Server" #first option
+        self.labelx, self.labely = 160, 125
+        self.startx, self.starty = 140, 300
+        self.y_offset = 50
+        self.cur_x_offset = - 60
+        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+
+        self.message = ''
+        self.message_enabled = False
+        self.message_time = time.time()
+
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            if self.game.running == False:
+                return
+            self.check_input()
+            self.game.display.fill(self.game.DARK_BLUE)
+            self.game.draw_text_outline('Server', 60, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Default Server', 40, self.startx, self.starty, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Custom Server', 40, self.startx, self.starty + self.y_offset, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            if self.message_enabled and time.time() - self.message_time < 2:
+                self.game.draw_text_outline(self.message, 40, self.startx - 30, self.starty + self.y_offset + 60, self.game.GREEN, self.game.DARK_BROWN, 2)
+            else:
+                self.message_enabled = False
+            self.draw_cursor()
+            self.blit_screen()
+    
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Default Server':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Custom Server'
+            elif self.state == 'Custom Server':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Default Server'
+        elif self.game.UP_KEY:
+            if self.state == 'Default Server':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
+                self.state = 'Custom Server'
+            elif self.state == 'Custom Server':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
+                self.state = 'Default Server'
+
+    def draw_cursor(self):
+        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
+
+    def check_input(self):
+        self.check_universal()
+        self.move_cursor()
+        if self.game.BACK_KEY or self.game.LEFT_KEY:
+            self.game.curr_menu = self.game.settings
+            self.run_display = False
+        if self.game.ENTER_KEY or self.game.RIGHT_KEY:
+            if self.state == 'Default Server':
+                self.message = 'Default Server Selected'
+                self.game.server_url = self.game.default_server_url
+                self.game.server.url = self.game.server_url
+                self.message_enabled = True
+                self.message_time = time.time()
+            elif self.state == 'Custom Server':
+                self.message = 'Custom Server Selected'
+                self.game.server_url = self.game.custom_server_url
+                self.game.server.url = self.game.server_url
+                self.message_enabled = True
+                self.message_time = time.time()
 
 class Customize(Menu):
     def __init__(self, game):
@@ -491,8 +571,14 @@ class CustomBackground(Menu):
         self.page_size = 14
 
         self.backgrounds = self.game.server.get_backgrounds()
-        self.total_entries = len(self.backgrounds)
-        self.total_pages = (self.total_entries -1) // self.page_size + 1
+        if self.game.server.last_request_status == False:
+            self.backgrounds = []
+            self.total_entries = 0
+            self.total_pages = 0
+        else:
+            self.total_entries = len(self.backgrounds)
+            self.total_pages = (self.total_entries -1) // self.page_size + 1
+
         self.page_symbol = ''
 
     def display_menu(self):
@@ -560,7 +646,7 @@ class CustomBackground(Menu):
         if self.game.BACK_KEY:
             self.game.curr_menu = self.game.customize
             self.run_display = False
-        if self.game.ENTER_KEY:
+        if self.game.ENTER_KEY and self.got_backgrounds:
             i = 0
             for bg in self.backgrounds:
                 if i == self.state: 
@@ -608,6 +694,9 @@ class CustomBackground(Menu):
     def _update_backgrounds_thread(self):
         self.backgrounds = self.game.server.get_backgrounds()
         if self.game.server.last_request_status == False:
+            self.total_entries = 0
+            self.total_pages = 0
+            self.backgrounds = []
             self.server_error = True
             return
         self.total_entries = len(self.backgrounds)
@@ -636,8 +725,14 @@ class CustomSoundtrack(Menu):
         self.page_size = 14
 
         self.soundtracks = self.game.server.get_soundtracks()
-        self.total_entries = len(self.soundtracks)
-        self.total_pages = (self.total_entries -1) // self.page_size + 1
+        if self.game.server.last_request_status == False:
+            self.soundtracks = []
+            self.total_entries = 0
+            self.total_pages = 0
+        else:
+            self.total_entries = len(self.soundtracks)
+            self.total_pages = (self.total_entries -1) // self.page_size + 1
+
         self.page_symbol = ''
 
     def display_menu(self):
@@ -705,7 +800,7 @@ class CustomSoundtrack(Menu):
         if self.game.BACK_KEY:
             self.game.curr_menu = self.game.customize
             self.run_display = False
-        if self.game.ENTER_KEY:
+        if self.game.ENTER_KEY and self.got_soundtracks:
             i = 0
             for bg in self.soundtracks:
                 if i == self.state: 
@@ -744,6 +839,9 @@ class CustomSoundtrack(Menu):
         self.soundtracks = self.game.server.get_soundtracks()
         if self.game.server.last_request_status == False:
             self.server_error = True
+            self.total_entries = 0
+            self.total_pages = 0
+            self.soundtracks = []
             return
         self.total_entries = len(self.soundtracks)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
