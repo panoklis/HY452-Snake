@@ -265,11 +265,17 @@ class Settings(Menu):
         self.state = "Customize" #first option
         self.labelx, self.labely = 185, 115
         self.startx, self.starty = 225, 275
+        self.speedx, self.speedy = -65, 220
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
         self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
+        #game speed slider
+        self.speed_rect = pygame.Rect(300+self.speedx, 400+self.speedy, 200, 20)
+        self.speed_cursor = pygame.Rect(300+self.speedx, 400+self.speedy, 100, 20)
+        self.speed_color = self.game.LIGHT_YELLOW
+        self.speed_enabled = False
 
     def display_menu(self):
         self.run_display = True
@@ -289,6 +295,11 @@ class Settings(Menu):
                 self.game.draw_text_outline('Music: ON', 40, self.startx, self.starty + self.y_offset*5, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             else:
                 self.game.draw_text_outline('Music: OFF', 40, self.startx, self.starty + self.y_offset*5, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            self.game.draw_text_outline('Game Speed', 40, self.startx, self.starty + self.y_offset*6, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+            #slider for game speed
+            pygame.draw.rect(self.game.display, self.speed_color, self.speed_rect, 2)
+            pygame.draw.rect(self.game.display, self.speed_color, self.speed_cursor)
+
             self.draw_cursor()
             self.blit_screen()
 
@@ -296,7 +307,7 @@ class Settings(Menu):
         self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
 
     def move_cursor(self):
-        if self.game.DOWN_KEY:
+        if self.game.DOWN_KEY and (not self.speed_enabled):
             if self.state == 'Customize':
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
                 self.state = 'Server'
@@ -313,11 +324,17 @@ class Settings(Menu):
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
                 self.state = 'Music'
             elif self.state == 'Music':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset)
+                self.state = 'Game Speed'
+            elif self.state == 'Game Speed':
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
                 self.state = 'Customize'
-        elif self.game.UP_KEY:
+        elif self.game.UP_KEY and (not self.speed_enabled):
             if self.state == 'Customize':
-                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset*5)
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y + self.y_offset*6)
+                self.state = 'Game Speed'
+            elif self.state == 'Game Speed':
+                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
                 self.state = 'Music'
             elif self.state == 'Music':
                 self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.cursor_rect.y - self.y_offset)
@@ -338,9 +355,18 @@ class Settings(Menu):
     def check_input(self):
         self.check_universal()
         self.move_cursor()
-        if self.game.BACK_KEY or self.game.LEFT_KEY:
+        if self.game.BACK_KEY:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
+        if self.game.LEFT_KEY:
+            if self.speed_enabled:
+                #cursor size changes to 100
+                if self.speed_cursor.width > 20:
+                    self.speed_cursor.width -= 20
+                    self.game.game_speed -= 1
+            else:
+                self.game.curr_menu = self.game.main_menu
+                self.run_display = False
         if self.game.ENTER_KEY or self.game.RIGHT_KEY:
             if self.state == 'Customize':
                 self.game.curr_menu = self.game.customize
@@ -365,6 +391,20 @@ class Settings(Menu):
                 else:
                     self.game.music_playing = True
                     pygame.mixer.music.unpause()
+            elif self.state == 'Game Speed' and (not self.game.RIGHT_KEY):
+                if not self.speed_enabled:
+                    self.speed_color = self.game.RED
+                    self.speed_enabled = True
+                else:
+                    self.speed_color = self.game.LIGHT_YELLOW
+                    self.speed_enabled = False
+        if self.game.RIGHT_KEY:
+            if self.speed_enabled:
+                if self.speed_cursor.width < 200:
+                    self.speed_cursor.width += 20
+                    self.game.game_speed += 1
+                #self.game.curr_menu = self.game.game_speed
+                #self.run_display = False
 
 class Customize(Menu):
     def __init__(self, game):
@@ -761,6 +801,8 @@ class Login(Menu):
         self.events = []
 
     def display_menu(self):
+        self.username = self.game.player_name
+        self.password = self.game.player_password
         self.run_display = True
         while self.run_display:
             self.events = self.game.check_events()
