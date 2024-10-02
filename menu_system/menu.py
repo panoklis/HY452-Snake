@@ -182,8 +182,6 @@ class MainMenu(Menu):
             elif self.state == 'Quit':
                 self.game.running = False
             self.run_display = False
-
-
             
 class HighScores(Menu):
     def __init__(self, game):
@@ -367,7 +365,6 @@ class Settings(Menu):
                     self.game.music_playing = True
                     pygame.mixer.music.unpause()
 
-
 class Customize(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -457,6 +454,7 @@ class Customize(Menu):
         #        self.startx += 5
 
 class CustomBackground(Menu):
+
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = 0 #first option
@@ -512,7 +510,7 @@ class CustomBackground(Menu):
                 i = 0
                 for bg in self.backgrounds:
                     if i >= (self.page - 1) * self.page_size and i < self.page * self.page_size:
-                        if i == self.state % self.page_size:
+                        if i == self.state:
                             self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.RED, self.game.DARK_BROWN, 2)
                         else:
                             self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
@@ -542,7 +540,7 @@ class CustomBackground(Menu):
     def check_input(self):
         self.check_universal()
         self.move_cursor()
-        if self.game.BACK_KEY or self.game.LEFT_KEY:
+        if self.game.BACK_KEY:
             self.game.curr_menu = self.game.customize
             self.run_display = False
         if self.game.ENTER_KEY:
@@ -592,6 +590,10 @@ class CustomBackground(Menu):
         thread.start()
     def _update_backgrounds_thread(self):
         self.backgrounds = self.game.server.get_backgrounds()
+        #add a few mock backgrounds to set
+        #append doesnt work, instead do this
+        for i in range(180):
+            self.backgrounds.add(f'backgrounds/mock_background' + str(i) + '.gif')
         if self.game.server.last_request_status == False:
             self.server_error = True
             return
@@ -599,6 +601,7 @@ class CustomBackground(Menu):
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_backgrounds = True
         print(self.backgrounds)
+
 """ 
 
 class Submenu(Menu):
