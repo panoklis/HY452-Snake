@@ -188,6 +188,14 @@ class HighScores(Menu):
         Menu.__init__(self, game)
         self.leaderboard_get_time = time.time()
         self.leaderboard = self.game.server.get_leaderboard()
+
+        #current leaderboard page
+        self.page = 1
+        #number of entries per page
+        self.page_size = 24
+        self.interval = 5
+        self.page_symbol = '[     ]'
+
         if self.game.server.last_request_status == False:
             self.leaderboard = {}
             self.total_entries = 0
@@ -195,12 +203,6 @@ class HighScores(Menu):
         else:
             self.total_entries = len(self.leaderboard)
             self.total_pages = (self.total_entries -1) // self.page_size + 1
-        #current leaderboard page
-        self.page = 1
-        #number of entries per page
-        self.page_size = 24
-        self.interval = 5
-        self.page_symbol = '[     ]'
 
 
     def display_menu(self):
@@ -232,7 +234,7 @@ class HighScores(Menu):
             for name, score in sorted(self.leaderboard.items(), key=lambda x: x[1], reverse=True):
                 #print(f'{position} :: User: {name} Score: {score}')
                 if position >= (self.page - 1) * self.page_size + 1 and position <= self.page * self.page_size:
-                    if name == self.game.player_name:
+                    if name == self.game.player_name and self.game.player.logged_in:
                         self.game.draw_text(f'{position}', 20, 20, y_offset, self.game.RED)
                         self.game.draw_text(f'{name}', 20, 170, y_offset, self.game.RED)
                         self.game.draw_text(f'{score}', 20, 380, y_offset, self.game.RED)
@@ -989,7 +991,9 @@ class Register(Menu):
                         self.error = True
                     else:
                         self.error_text = 'Registration successful'
+                        self.game.logged_in = True
                         self.game.player_name = self.username
+                        self.game.password = self.password
                         self.error_color = self.game.GREEN
                         self.error_time = time.time()
                         self.error = True

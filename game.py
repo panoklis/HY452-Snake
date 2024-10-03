@@ -24,7 +24,40 @@ class Game():
         self.DISPLAY_W, self.DISPLAY_H = 600, 800
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
+        self.logged_in = False
         pygame.display.set_caption('HY452 Snake')
+
+        #load font from ttf
+        self.font_name = 'assets/fonts/Super Moods.ttf'
+        self.def_font = pygame.font.Font(self.font_name, 20)
+
+        #define colors
+        self.BG = (255, 200, 150)
+        self.BODY_INNER = (255, 255, 0)
+        self.BODY_OUTER = (0, 0, 0)
+        self.FOOD_COL = (0, 250, 50)
+        self.HEAD_COL = (255, 140, 0)
+        self.BLUE = (0, 0, 255)
+        self.RED = (255, 0, 0)
+        self.WHITE = (255, 255, 255)
+        self.GREEN = (0, 255, 0)
+        #text/outline colors
+        self.LIGHT_YELLOW = pygame.Color(255, 255, 102)
+        self.DARK_BROWN = pygame.Color(102, 51, 0)
+
+        self.BRIGHT_ORANGE = pygame.Color(255, 153, 51)
+        self.DEEP_FOREST_GREEN = pygame.Color(0, 102, 0)
+
+        self.SKY_BLUE = pygame.Color(135, 206, 250)
+        self.DARK_BLUE = pygame.Color(0, 0, 139)
+
+        self.PASTEL_PINK = pygame.Color(255, 182, 193)
+        self.DARK_PURPLE = pygame.Color(102, 0, 102)
+
+        self.BRIGHT_RED = pygame.Color(255, 69, 0)
+        self.BLACK = pygame.Color(0, 0, 0)
+
+        self.loaded = False
 
         #setup a rectangle for "Play Again" Option
         self.again_rect = Rect(self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2, 160, 50)
@@ -52,9 +85,6 @@ class Game():
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY, self.M_KEY = False, False, False, False, False, False, False, False, False, False, False, False
-        #load font from ttf
-        self.font_name = 'assets/fonts/Super Moods.ttf'
-        self.def_font = pygame.font.Font(self.font_name, 20)    
 
         #define snake variables
         self.snake_pos = [[int(self.DISPLAY_W / 2), int(self.DISPLAY_H / 2)]]
@@ -63,32 +93,6 @@ class Game():
         self.snake_pos.append([int(self.DISPLAY_W / 2), int(self.DISPLAY_H / 2) + self.cell_size * 3])
         self.direction = Direction.UP #1 is up, 2 is down, 3 is left, 4 is right
 
-        #define colors
-        self.BG = (255, 200, 150)
-        self.BODY_INNER = (255, 255, 0)
-        self.BODY_OUTER = (0, 0, 0)
-        self.FOOD_COL = (0, 250, 50)
-        self.HEAD_COL = (255, 140, 0)
-        self.BLUE = (0, 0, 255)
-        self.RED = (255, 0, 0)
-        self.WHITE = (255, 255, 255)
-        self.GREEN = (0, 255, 0)
-        #text/outline colors
-        self.LIGHT_YELLOW = pygame.Color(255, 255, 102)
-        self.DARK_BROWN = pygame.Color(102, 51, 0)
-
-        self.BRIGHT_ORANGE = pygame.Color(255, 153, 51)
-        self.DEEP_FOREST_GREEN = pygame.Color(0, 102, 0)
-
-        self.SKY_BLUE = pygame.Color(135, 206, 250)
-        self.DARK_BLUE = pygame.Color(0, 0, 139)
-
-        self.PASTEL_PINK = pygame.Color(255, 182, 193)
-        self.DARK_PURPLE = pygame.Color(102, 0, 102)
-
-        self.BRIGHT_RED = pygame.Color(255, 69, 0)
-        self.BLACK = pygame.Color(0, 0, 0)
-        
         #initialize menu objects
         self.main_menu = MainMenu(self)
         self.highscores = HighScores(self)
@@ -119,6 +123,7 @@ class Game():
         self.animation_frame = 0
         self.animation_total_frames = 0
 
+        self.loaded = True
         print("Game Initialized")
 
     def draw_background(self,background_image):
@@ -177,10 +182,10 @@ class Game():
                 self.animation_frame = (self.animation_frame + 1) % self.animation_total_frames
                 self.background_image = self.animation_frames[self.animation_frame]
             self.draw_background(self.background_image)
-            if time.time() - current_time > self.post_interval and score_changed:
+            if time.time() - current_time > self.post_interval and score_changed and self.logged_in:
                 current_time = time.time()
                 score_changed = False
-                self.server.post_score(self.score, self.player_name)
+                self.server.post_score(self.score, self.player_name, self.password)
                 
             if score_changed:
                 if self.score > self.highscore:
@@ -339,7 +344,8 @@ class Game():
                 if time.time() - endgame_time > self.gameover_interval:
                     #reset game variables
                     print("Game Over")
-                    self.server.post_score(self.score, self.player_name)
+                    if self.logged_in:
+                        self.server.post_score(self.score, self.player_name, self.password)
                     self.reset_game()
                     self.playing = False
 

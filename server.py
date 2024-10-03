@@ -12,9 +12,10 @@ class ScoreServer():
         self.url = url
         self.last_request_status = None
 
-    def post_score(self, score, name):
+    def post_score(self, score, name, password):
         data = {
-            'userID': name,
+            'username': name,
+            'passwordHash': hashlib.sha1(password.encode()).hexdigest(),
             'score': score
         }
         post_thread = threading.Thread(target=self._post_score_thread, args=(data,))
@@ -97,7 +98,7 @@ class ScoreServer():
             self.last_request_status = False
             return None
         leaderboard = json.loads(response.json()['body'])
-        leaderboard = {entry['userID']: entry['score'] for entry in leaderboard}
+        leaderboard = {entry['username']: entry['score'] for entry in leaderboard}
         self.last_request_status = True
         return leaderboard
 
