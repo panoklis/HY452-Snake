@@ -126,9 +126,9 @@ class ScoreServer():
 
     def login_user(self, name, password):
         data = {
-            'Action': 'Login',
-            'Username': name,
-            'PasswordHash': hashlib.sha1(password.encode()).hexdigest()
+            'action': 'Login',
+            'username': name,
+            'passwordHash': hashlib.sha1(password.encode()).hexdigest()
         }
         try:
             response = requests.post(self.url + '/login', json=data)
@@ -142,5 +142,6 @@ class ScoreServer():
 
         print("User logged in successfully")
         print(f'Response: {response.text}')
+        response_data = json.loads(response.text)
         self.last_request_status = True
-        return True
+        return response_data

@@ -1047,6 +1047,12 @@ class Login(Menu):
         self.username, self.password, self.pass_redact = '', '', ''
         self.events = []
 
+        self.error_text = ''
+        self.error_text_x, self.error_text_y = 100, 600
+        self.error_time = time.time()
+        self.error_color = self.game.RED
+        self.error = False
+
     def display_menu(self):
         self.username = self.game.player_name
         self.password = self.game.password
@@ -1067,6 +1073,10 @@ class Login(Menu):
             self.pass_redact = ' *' * len(self.password)
             self.game.draw_text_outline('Password: ' + self.pass_redact, 25, self.startx, self.starty + self.y_offset, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('OK', 40, self.okx, self.oky, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
+            if self.error and time.time() - self.error_time < 3:
+                self.game.draw_text_outline(self.error_text, 30, self.error_text_x, self.error_text_y, self.error_color, self.game.BLACK, 2)
+            else:
+                self.error = False
             self.draw_cursor()
             self.blit_screen()
 
@@ -1113,7 +1123,28 @@ class Login(Menu):
                 self.game.DOWN_KEY = True
                 self.move_cursor()
             elif self.state == 'OK':
-                pass
+                if self.username == '' or self.password == '':
+                    self.error_text = 'Please fill in all fields'
+                    self.error_color = self.game.RED
+                    self.error_time = time.time()
+                    self.error = True
+                else:
+                    self.response = self.game.server.login_user(self.username, self.password)
+                    if self.game.server.last_request_status == False:
+                        self.error_text = 'Login failed'
+                        self.error_color = self.game.RED
+                        self.error_time = time.time()
+                        self.error = True
+                    else:
+                        self.error_text = 'Login successful'
+                        self.game.player_name = self.response['username']
+                        self.game.email = self.response['email']
+                        self.game.highscore = int(self.response['highscore'])
+                        self.game.password = self.password
+                        self.game.logged_in = True
+                        self.error_color = self.game.GREEN
+                        self.error_time = time.time()
+                        self.error = True
 
     def check_textinput(self):
         for event in self.events:
