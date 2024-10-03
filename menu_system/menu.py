@@ -699,6 +699,10 @@ class CustomBackground(Menu):
             self.backgrounds = []
             self.server_error = True
             return
+        #debug
+        #add more fake backgrounds
+        #for i in range(50):
+        #    self.backgrounds.add(f'backgrounds/your-background-{i}.gif')
         self.total_entries = len(self.backgrounds)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_backgrounds = True
@@ -843,6 +847,10 @@ class CustomSoundtrack(Menu):
             self.total_pages = 0
             self.soundtracks = []
             return
+        #debug
+        #add more fake soundtracks
+        #for i in range(50):
+        #    self.soundtracks.add(f'soundtracks/soundtrack{i}.mp3')
         self.total_entries = len(self.soundtracks)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_soundtracks = True
