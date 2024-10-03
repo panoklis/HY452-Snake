@@ -22,7 +22,7 @@ class ScoreServer():
         post_thread.start()
         
     def _post_score_thread(self, data):
-        response = requests.post(self.url + '/leaderboard', json=data)
+        response = requests.post(self.url + '/leaderboard/score', json=data)
         if response.status_code == 200:
             print("Score posted successfully")
             print(f'Response: {response.text}')

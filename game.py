@@ -82,6 +82,7 @@ class Game():
         self.player_name = configs['player_name']
         self.password = configs['password']
         self.server = ScoreServer(self.server_url)
+        self.email = configs['email']
 
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.ENTER_KEY, self.BACK_KEY, self.PAUSE_KEY, self.W_KEY, self.A_KEY, self.S_KEY, self.D_KEY, self.M_KEY = False, False, False, False, False, False, False, False, False, False, False, False
