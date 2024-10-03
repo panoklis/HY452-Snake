@@ -104,10 +104,10 @@ class ScoreServer():
 
     def register_user(self, name, password, email):
         data = {
-            'Action': 'Register',
-            'Username': name,
-            'Email': email,
-            'PasswordHash': hashlib.sha1(password.encode()).hexdigest()
+            'action': 'Register',
+            'username': name,
+            'email': email,
+            'passwordHash': hashlib.sha1(password.encode()).hexdigest()
         }
         try:
             response = requests.post(self.url + '/register', json=data)
