@@ -12,7 +12,7 @@ class Menu():
         self.cur_offset = - 40
         self.x_offset = -240
         self.cursor_rect = pygame.Rect(self.mid_w + self.cur_offset + self.x_offset, self.mid_h-70, 20, 20)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-pink-purple.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-pink-purple.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         #Text colors
@@ -104,7 +104,7 @@ class MainMenu(Menu):
         self.cursor_rect.midtop = (self.cursor_rect.x, self.cursor_rect.y)
 
         #Animated background tricks
-        self.bg_frames = self.load_gif_frames('../assets/images/backgrounds/cabin_forest_background_600_800.gif')
+        self.bg_frames = self.load_gif_frames('assets/images/backgrounds/cabin_forest_background_600_800.gif')
         self.bg_frames_len = len(self.bg_frames)
         self.frame_index = 0
         #Scale animation frames here
@@ -279,7 +279,7 @@ class Settings(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
         #game speed slider
         self.speed_rect = pygame.Rect(300+self.speedx, 400+self.speedy, 200, 20)
@@ -422,7 +422,7 @@ class ServerMenu(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.message = ''
@@ -495,7 +495,7 @@ class Customize(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.server_success = False
@@ -560,7 +560,7 @@ class CustomBackground(Menu):
         self.cur_x_offset = - 50
         self.labelx, self.labely = 20, 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.server_success = False
@@ -614,9 +614,9 @@ class CustomBackground(Menu):
                 for bg in self.backgrounds:
                     if i >= (self.page - 1) * self.page_size and i < self.page * self.page_size:
                         if i == self.state:
-                            self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.RED, self.game.DARK_BROWN, 2)
+                            self.game.draw_text_outline(bg.split('/')[1], 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.RED, self.game.DARK_BROWN, 2)
                         else:
-                            self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+                            self.game.draw_text_outline(bg.split('/')[1], 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
                     i += 1
             else:
                 self.game.draw_text_outline('Getting Backgrounds from server...', 30, self.labelx, self.labely+10, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
@@ -718,7 +718,7 @@ class CustomSoundtrack(Menu):
         self.cur_x_offset = - 50
         self.labelx, self.labely = 20, 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.server_success = False
@@ -769,12 +769,12 @@ class CustomSoundtrack(Menu):
                 self.game.draw_text_outline('Server Soundtracks' + '    ' + self.page_symbol, 40, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
                 #print soundtracks from server
                 i = 0
-                for bg in self.soundtracks:
+                for st in self.soundtracks:
                     if i >= (self.page - 1) * self.page_size and i < self.page * self.page_size:
                         if i == self.state:
-                            self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.RED, self.game.DARK_BROWN, 2)
+                            self.game.draw_text_outline(st.split('/')[1], 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.RED, self.game.DARK_BROWN, 2)
                         else:
-                            self.game.draw_text_outline(bg, 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
+                            self.game.draw_text_outline(st.split('/')[1], 30, self.startx, self.starty + self.y_offset * (i % self.page_size), self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
                     i += 1
             else:
                 self.game.draw_text_outline('Getting soundtracks from server...', 30, self.labelx, self.labely+10, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
@@ -806,18 +806,19 @@ class CustomSoundtrack(Menu):
             self.run_display = False
         if self.game.ENTER_KEY and self.got_soundtracks:
             i = 0
-            for bg in self.soundtracks:
+            for st in self.soundtracks:
                 if i == self.state: 
-                    # bg is of the form 'soundtracks/your-soundtrack.gif'
+                    # st is of the form 'soundtracks/your-soundtrack.gif'
                     # we need to remove the 'soundtracks/' part
-                    bg = bg.split('/')[1]
-                    soundtrack = self.game.server.get_soundtrack(bg)
+                    st = st.split('/')[1]
+                    soundtrack = self.game.server.get_soundtrack(st)
                     if self.game.server.last_request_status == False:
                         self.server_error = True
                         break
                     #set soundtrack
                     pygame.mixer.music.load(soundtrack)
                     pygame.mixer.music.play(-1)
+                    self.game.music_playing = True
                     self.game.soundtrack_override = True
                     self.game.curr_menu = self.game.main_menu
                     #self.run_display = False
@@ -866,7 +867,7 @@ class Register(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
         self.username, self.password, self.repeat_password, self.email, self.pass_redact, self.repeat_pass_redact = '', '', '', '', '', ''
         self.events = []
@@ -1036,7 +1037,7 @@ class Login(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
         self.username, self.password, self.pass_redact = '', '', ''
         self.events = []
@@ -1166,7 +1167,7 @@ class Submenu(Menu):
         self.y_offset = 80
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
     def display_menu(self):
