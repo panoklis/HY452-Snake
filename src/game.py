@@ -19,7 +19,7 @@ class Game():
     def __init__(self):
         pygame.init()
 
-        configs = yaml.safe_load(open('config.yaml'))
+        configs = yaml.safe_load(open('../config.yaml'))
         
         self.DISPLAY_W, self.DISPLAY_H = 600, 800
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
@@ -28,7 +28,7 @@ class Game():
         pygame.display.set_caption('HY452 Snake')
 
         #load font from ttf
-        self.font_name = 'assets/fonts/Super Moods.ttf'
+        self.font_name = '../assets/fonts/Super Moods.ttf'
         self.def_font = pygame.font.Font(self.font_name, 20)
 
         #define colors
@@ -108,13 +108,13 @@ class Game():
         self.curr_menu = self.main_menu
 
         # Load background music
-        pygame.mixer.music.load("assets/sounds/background_music.mp3")
+        pygame.mixer.music.load("../assets/sounds/background_music.mp3")
         pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
         pygame.mixer.music.play(-1)  # Play the music (-1 means loop indefinitely)
         self.music_playing = True
 
         #Load background image
-        self.background_image = pygame.image.load('assets/images/backgrounds/background_image.jpg')
+        self.background_image = pygame.image.load('../assets/images/backgrounds/background_image.jpg')
         self.background_image = pygame.transform.scale(self.background_image, (self.DISPLAY_W, self.DISPLAY_H))
         self.background_override = False
 

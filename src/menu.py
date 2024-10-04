@@ -12,7 +12,7 @@ class Menu():
         self.cur_offset = - 40
         self.x_offset = -240
         self.cursor_rect = pygame.Rect(self.mid_w + self.cur_offset + self.x_offset, self.mid_h-70, 20, 20)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-pink-purple.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-pink-purple.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         #Text colors
@@ -104,7 +104,7 @@ class MainMenu(Menu):
         self.cursor_rect.midtop = (self.cursor_rect.x, self.cursor_rect.y)
 
         #Animated background tricks
-        self.bg_frames = self.load_gif_frames('assets/images/backgrounds/cabin_forest_background_600_800.gif')
+        self.bg_frames = self.load_gif_frames('../assets/images/backgrounds/cabin_forest_background_600_800.gif')
         self.bg_frames_len = len(self.bg_frames)
         self.frame_index = 0
         #Scale animation frames here
@@ -281,7 +281,7 @@ class Settings(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
         #game speed slider
         self.speed_rect = pygame.Rect(300+self.speedx, 400+self.speedy, 200, 20)
@@ -424,7 +424,7 @@ class ServerMenu(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.message = ''
@@ -497,7 +497,7 @@ class Customize(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.server_success = False
@@ -562,7 +562,7 @@ class CustomBackground(Menu):
         self.cur_x_offset = - 50
         self.labelx, self.labely = 20, 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.server_success = False
@@ -720,7 +720,7 @@ class CustomSoundtrack(Menu):
         self.cur_x_offset = - 50
         self.labelx, self.labely = 20, 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
         self.server_success = False
@@ -869,7 +869,7 @@ class Register(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
         self.username, self.password, self.repeat_password, self.email, self.pass_redact, self.repeat_pass_redact = '', '', '', '', '', ''
         self.events = []
@@ -1042,7 +1042,7 @@ class Login(Menu):
         self.y_offset = 50
         self.cur_x_offset = - 40
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-orange-green.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (30, 30))
         self.username, self.password, self.pass_redact = '', '', ''
         self.events = []
@@ -1206,7 +1206,7 @@ class Submenu(Menu):
         self.y_offset = 80
         self.cur_x_offset = - 60
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
+        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
 
     def display_menu(self):
