@@ -994,6 +994,7 @@ class Register(Menu):
                         self.game.player_name = self.username
                         self.game.email = self.email
                         self.game.password = self.password
+                        self.game.highscore = self.game.score = 0
                         self.game.logged_in = True
                         self.error_color = self.game.GREEN
                         self.error_time = time.time()
@@ -1139,7 +1140,8 @@ class Login(Menu):
                         self.error_text = 'Login successful'
                         self.game.player_name = self.response['username']
                         self.game.email = self.response['email']
-                        self.game.highscore = int(self.response['highscore'])
+                        self.game.highscore = max(int(self.response['highscore']) , self.game.highscore)
+                        self.game.score = 0
                         self.game.password = self.password
                         self.game.logged_in = True
                         self.error_color = self.game.GREEN

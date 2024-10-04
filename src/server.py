@@ -131,6 +131,7 @@ class ScoreServer():
             'passwordHash': hashlib.sha1(password.encode()).hexdigest()
         }
         try:
+            print(f'Logging in user {name} with password {password} and hash {data["passwordHash"]}')
             response = requests.post(self.url + '/login', json=data)
             response.raise_for_status()
         except RequestException as e:
