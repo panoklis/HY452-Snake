@@ -115,7 +115,6 @@ class ScoreServer():
         except RequestException as e:
             print("Error registering user")
             print(f'Error: {e}')
-            #print(f'Error: {response.text}')
             self.last_request_status = False
             return False
 

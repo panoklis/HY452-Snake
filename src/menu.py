@@ -35,7 +35,6 @@ class Menu():
         #self.outline_col = self.game.BLACK
 
     def draw_cursor(self):
-        #self.game.draw_text('=>', 25, self.cursor_rect.x, self.cursor_rect.y, self.game.WHITE)
         self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
 
     def blit_screen(self):
@@ -52,7 +51,6 @@ class Menu():
         self.game.draw_text_outline('OK', 40, 270, 420, self.game.WHITE, self.game.BLACK, 2)
 
     def popup_serversuccess(self):
-        #draw rect in display
         pygame.draw.rect(self.game.display, self.game.BLACK, pygame.Rect(146, 296, 308, 208))
         pygame.draw.rect(self.game.display, self.game.GREEN, pygame.Rect(150, 300, 300, 200))
         pygame.draw.rect(self.game.display, self.game.DARK_BLUE, pygame.Rect(263, 410, 60, 50))
@@ -107,9 +105,6 @@ class MainMenu(Menu):
         self.bg_frames = self.load_gif_frames('../assets/images/backgrounds/cabin_forest_background_600_800.gif')
         self.bg_frames_len = len(self.bg_frames)
         self.frame_index = 0
-        #Scale animation frames here
-        #for i in range(self.bg_frames_len):
-        #    self.bg_frames[i] = pygame.transform.scale(self.bg_frames[i], (self.game.DISPLAY_H, self.game.DISPLAY_H))
 
     def display_menu(self):
         self.run_display = True
@@ -120,7 +115,6 @@ class MainMenu(Menu):
                 return
             self.check_input()
             
-            #self.game.display.fill(self.game.BLACK)
             #Animated background tricks
             if time.time() - last_anim_time > 0.02:
                 last_anim_time = time.time()
@@ -215,7 +209,6 @@ class HighScores(Menu):
             if time.time() - self.leaderboard_get_time > self.interval:
                 self.update_leaderboard()
                 self.leaderboard_get_time = time.time()
-            #print leaderboard sorted by score
             if self.page > 1 and self.page < self.total_pages:
                 self.page_symbol = '<< >>'
             elif self.page == 1 and self.page < self.total_pages:
@@ -232,7 +225,6 @@ class HighScores(Menu):
             y_offset = 85
             position = 1
             for name, score in sorted(self.leaderboard.items(), key=lambda x: x[1], reverse=True):
-                #print(f'{position} :: User: {name} Score: {score}')
                 if position >= (self.page - 1) * self.page_size + 1 and position <= self.page * self.page_size:
                     if name == self.game.player_name and self.game.logged_in:
                         self.game.draw_text(f'{position}', 20, 20, y_offset, self.game.RED)
@@ -274,7 +266,7 @@ class HighScores(Menu):
 class Settings(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = "Customize" #first option
+        self.state = "Customize"
         self.labelx, self.labely = 185, 115
         self.startx, self.starty = 225, 275
         self.speedx, self.speedy = -65, 220
@@ -283,7 +275,8 @@ class Settings(Menu):
         self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
         self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
         self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
-        #game speed slider
+
+        #Game Speed slider
         self.speed_rect = pygame.Rect(300+self.speedx, 400+self.speedy, 200, 20)
         self.speed_cursor = pygame.Rect(300+self.speedx, 400+self.speedy, 100, 20)
         self.speed_color = self.game.LIGHT_YELLOW
@@ -308,7 +301,7 @@ class Settings(Menu):
             else:
                 self.game.draw_text_outline('Music: OFF', 40, self.startx, self.starty + self.y_offset*5, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
             self.game.draw_text_outline('Game Speed', 40, self.startx, self.starty + self.y_offset*6, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
-            #slider for game speed
+            
             pygame.draw.rect(self.game.display, self.speed_color, self.speed_rect, 2)
             pygame.draw.rect(self.game.display, self.speed_color, self.speed_cursor)
 
@@ -372,7 +365,7 @@ class Settings(Menu):
             self.run_display = False
         if self.game.LEFT_KEY:
             if self.speed_enabled:
-                #cursor size changes to 100
+                #Cursor size changes up to 100
                 if self.speed_cursor.width > 20:
                     self.speed_cursor.width -= 20
                     self.game.game_speed -= 1
@@ -418,7 +411,7 @@ class Settings(Menu):
 class ServerMenu(Menu):
     def __init__(self,game):
         Menu.__init__(self, game)
-        self.state = "Default Server" #first option
+        self.state = "Default Server"
         self.labelx, self.labely = 160, 125
         self.startx, self.starty = 140, 300
         self.y_offset = 50
@@ -491,7 +484,7 @@ class ServerMenu(Menu):
 class Customize(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = "Custom Soundtrack" #first option
+        self.state = "Custom Soundtrack"
         self.labelx, self.labely = 160, 125
         self.startx, self.starty = 160, 300
         self.y_offset = 50
@@ -556,7 +549,7 @@ class CustomBackground(Menu):
 
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = 0 #first option
+        self.state = 0
         self.startx, self.starty = 70, 110
         self.y_offset = 50
         self.cur_x_offset = - 50
@@ -611,7 +604,7 @@ class CustomBackground(Menu):
                 else:
                     self.page_symbol = ''
                 self.game.draw_text_outline('Server Backgrounds' + '    ' + self.page_symbol, 40, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
-                #print backgrounds from server
+
                 i = 0
                 for bg in self.backgrounds:
                     if i >= (self.page - 1) * self.page_size and i < self.page * self.page_size:
@@ -675,7 +668,6 @@ class CustomBackground(Menu):
 
                     self.game.background_override = True
                     self.game.curr_menu = self.game.main_menu
-                    #self.run_display = False
                     self.server_success = True
                     break
                 i += 1
@@ -701,10 +693,7 @@ class CustomBackground(Menu):
             self.backgrounds = []
             self.server_error = True
             return
-        #debug
-        #add more fake backgrounds
-        #for i in range(50):
-        #    self.backgrounds.add(f'backgrounds/your-background-{i}.gif')
+        
         self.total_entries = len(self.backgrounds)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_backgrounds = True
@@ -714,7 +703,7 @@ class CustomSoundtrack(Menu):
 
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = 0 #first option
+        self.state = 0
         self.startx, self.starty = 70, 110
         self.y_offset = 50
         self.cur_x_offset = - 50
@@ -769,7 +758,7 @@ class CustomSoundtrack(Menu):
                 else:
                     self.page_symbol = ''
                 self.game.draw_text_outline('Server Soundtracks' + '    ' + self.page_symbol, 40, self.labelx, self.labely, self.game.LIGHT_YELLOW, self.game.DARK_BROWN, 2)
-                #print soundtracks from server
+                
                 i = 0
                 for st in self.soundtracks:
                     if i >= (self.page - 1) * self.page_size and i < self.page * self.page_size:
@@ -823,7 +812,6 @@ class CustomSoundtrack(Menu):
                     self.game.music_playing = True
                     self.game.soundtrack_override = True
                     self.game.curr_menu = self.game.main_menu
-                    #self.run_display = False
                     self.server_success = True
                     break
                 i += 1
@@ -850,10 +838,6 @@ class CustomSoundtrack(Menu):
             self.total_pages = 0
             self.soundtracks = []
             return
-        #debug
-        #add more fake soundtracks
-        #for i in range(50):
-        #    self.soundtracks.add(f'soundtracks/soundtrack{i}.mp3')
         self.total_entries = len(self.soundtracks)
         self.total_pages = (self.total_entries -1) // self.page_size + 1
         self.got_soundtracks = True
@@ -862,7 +846,7 @@ class CustomSoundtrack(Menu):
 class Register(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = "Username" #first option
+        self.state = "Username"
         self.labelx, self.labely = 190, 115
         self.startx, self.starty = 55, 270
         self.okx, self.oky = 280, 650
@@ -888,13 +872,8 @@ class Register(Menu):
             if self.game.running == False:
                 return
             self.check_input()
-            
-            #INSERT extra local event handler, for text completion
 
             self.game.display.fill(self.game.GREEN)
-            
-            #Debugging
-            #self.game.draw_text_outline('OK   x,y: ' + str(self.okx) + ',' + str(self.oky), 20, 0, 0, self.game.WHITE, self.game.BLACK, 1)
 
             self.game.draw_text_outline('Register', 60, self.labelx, self.labely, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
             self.game.draw_text_outline('Username: ' + self.username, 25, self.startx, self.starty, self.game.BRIGHT_ORANGE, self.game.DEEP_FOREST_GREEN, 2)
@@ -949,8 +928,6 @@ class Register(Menu):
                 self.state = 'Username'
 
     def check_input(self):
-        #not applicable, conflict with text input
-        #self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY and self.state == 'OK':
             self.game.curr_menu = self.game.settings
@@ -999,17 +976,6 @@ class Register(Menu):
                         self.error_color = self.game.GREEN
                         self.error_time = time.time()
                         self.error = True
-                    
-        #Debugging
-        #if self.game.W_KEY:
-        #    self.oky -= 5
-        #if self.game.S_KEY:
-        #    self.oky += 5
-        #if self.game.A_KEY:
-        #    self.okx -= 5
-        #if self.game.D_KEY:
-        #    self.okx += 5
-
 
     def check_textinput(self):
         for event in self.events:
@@ -1064,8 +1030,6 @@ class Login(Menu):
             if self.game.running == False:
                 return
             self.check_input()
-            
-            #INSERT extra local event handler, for text completion
 
             self.game.display.fill(self.game.GREEN)
 
@@ -1107,8 +1071,6 @@ class Login(Menu):
                 self.state = 'Username'
 
     def check_input(self):
-        #not applicable, conflict with text input
-        #self.check_universal()
         self.move_cursor()
         if self.game.BACK_KEY and self.state == 'OK':
             self.game.curr_menu = self.game.settings
@@ -1197,73 +1159,3 @@ class UserProfile(Menu):
         if self.game.BACK_KEY or self.game.LEFT_KEY:
             self.game.curr_menu = self.game.settings
             self.run_display = False
-
-""" 
-
-class Submenu(Menu):
-    def __init__(self, game):
-        Menu.__init__(self, game)
-        self.state = "Customize" #first option
-        self.startx, self.starty = 200, 200
-        self.y_offset = 80
-        self.cur_x_offset = - 60
-        self.cursor_rect = pygame.Rect(self.startx + self.cur_x_offset, self.starty, 40, 40)
-        self.cursor_icon = pygame.image.load('../assets/images/icons/snake-icon-transparent-thick-yellow-brown.png').convert_alpha()
-        self.cursor_icon = pygame.transform.scale(self.cursor_icon, (40, 40))
-
-    def display_menu(self):
-        self.run_display = True
-        while self.run_display:
-            self.game.check_events()
-            if self.game.running == False:
-                return
-            self.check_input()
-            #visual representation of submenu
-            self.draw_cursor()
-            self.blit_screen()
-
-    
-    def move_cursor(self):
-        if self.game.DOWN_KEY:
-            if self.state == 'Top Option':
-                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
-                self.state = 'Bottom Option'
-            elif self.state == 'Bottom Option':
-                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
-                self.state = 'Top Option'
-        elif self.game.UP_KEY:
-            if self.state == 'Top Option':
-                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty + self.y_offset)
-                self.state = 'Bottom Option'
-            elif self.state == 'Bottom Option':
-                self.cursor_rect.topleft = (self.startx + self.cur_x_offset, self.starty)
-                self.state = 'Top Option'
-    
-    def draw_cursor(self):
-        self.game.display.blit(self.cursor_icon, (self.cursor_rect.x, self.cursor_rect.y))
-
-    def check_input(self):
-        self.check_universal()
-        self.move_cursor()
-        if self.game.BACK_KEY
-            self.game.curr_menu = self.game.main_menu
-            self.run_display = False
-        if self.game.ENTER_KEY:
-            self.game.curr_menu = self.game.whatevermenu
-            self.run_display = False
-        if self.game.LEFT_KEY:
-            pass
-            #Do some left key stuff
-        if self.game.RIGHT_KEY:
-            pass
-            #Do some right key stuff
-        if self.game.UP_KEY:
-            pass
-            #Do some up key stuff
-            #Change state to lower menu option
-        if self.game.DOWN_KEY:
-            pass
-            #Do some down key stuff
-            #Change state to higher menu option
-
-"""

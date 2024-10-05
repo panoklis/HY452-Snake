@@ -41,6 +41,7 @@ class Game():
         self.RED = (255, 0, 0)
         self.WHITE = (255, 255, 255)
         self.GREEN = (0, 255, 0)
+
         #text/outline colors
         self.LIGHT_YELLOW = pygame.Color(255, 255, 102)
         self.DARK_BROWN = pygame.Color(102, 51, 0)
@@ -139,15 +140,12 @@ class Game():
         self.display.blit(score_img, (2, 2))
 
     def check_game_over(self):
-        #first check is to see if the snake has eaten itself by checking if the head has clashed with the rest of the body
         head_count = 0
         for x in self.snake_pos:
             if self.snake_pos[0] == x and head_count > 0:
                 self.game_over = True
             head_count += 1
 
-
-        #second check is to see if the snake has gone out of bounds
         if self.snake_pos[0][0] < 0 or self.snake_pos[0][0] > self.DISPLAY_W or self.snake_pos[0][1] < 0 or self.snake_pos[0][1] > self.DISPLAY_H:
             self.game_over = True   
 
@@ -166,11 +164,6 @@ class Game():
         last_move_final = True
         current_time = time.time()
         score_changed = False
-
-        #Draw the game screen
-
-        #background_image = pygame.image.load(self.server.get_background())
-        #background_image = pygame.transform.scale(background_image, (self.DISPLAY_W, self.DISPLAY_H))
         
         self.game_over = False
         self.pause = False
@@ -261,58 +254,44 @@ class Game():
             #check if food has been eaten
             if self.snake_pos[0] == self.food:
                 self.new_food = True
-                #create a new piece at the last point of the snake's tail
                 self.new_piece = list(self.snake_pos[-1])
-                #add an extra piece to the snake
                 if self.direction == Direction.UP:
                     self.new_piece[1] += self.cell_size
-                #heading down
                 if self.direction == Direction.DOWN:
                     self.new_piece[1] -= self.cell_size
-                #heading right
                 if self.direction == Direction.RIGHT:
                     self.new_piece[0] -= self.cell_size
-                #heading left
                 if self.direction == Direction.LEFT:
                     self.new_piece[0] += self.cell_size
 
-                #attach new piece to the end of the snake
                 self.snake_pos.append(self.new_piece)
 
-                #increase score
                 self.score += 1
                 score_changed = True
 
 
             if self.game_over == False and self.pause == False:
-                #update snake
                 if time.time() - self.update_snake > 0.5 / speed:
                     self.update_snake = time.time()
-                    #first shift the positions of each snake piece back.
                     self.snake_pos = self.snake_pos[-1:] + self.snake_pos[:-1]
-                    #now update the position of the head based on direction
-                    #heading up
                     if self.direction == Direction.UP:
                         self.snake_pos[0][0] = self.snake_pos[1][0]
                         if self.snake_pos[1][1] - self.cell_size < 0:
                             self.snake_pos[0][1] = self.DISPLAY_H - self.cell_size
                         else:
                             self.snake_pos[0][1] = self.snake_pos[1][1] - self.cell_size
-                    #heading down
                     if self.direction == Direction.DOWN:
                         self.snake_pos[0][0] = self.snake_pos[1][0]
                         if self.snake_pos[1][1] + self.cell_size >= self.DISPLAY_H:
                             self.snake_pos[0][1] = 0
                         else:
                             self.snake_pos[0][1] = self.snake_pos[1][1] + self.cell_size
-                    #heading right
                     if self.direction == Direction.RIGHT:
                         self.snake_pos[0][1] = self.snake_pos[1][1]
                         if self.snake_pos[1][0] + self.cell_size >= self.DISPLAY_W:
                             self.snake_pos[0][0] = 0
                         else:
                             self.snake_pos[0][0] = self.snake_pos[1][0] + self.cell_size
-                    #heading left
                     if self.direction == Direction.LEFT:
                         self.snake_pos[0][1] = self.snake_pos[1][1]
                         if self.snake_pos[1][0] - self.cell_size < 0:
@@ -341,9 +320,7 @@ class Game():
 
             if self.game_over == True:
                 self.draw_game_over()
-                #print(f'endgame_time: {endgame_time} current_time: {time.time()}')
                 if time.time() - endgame_time > self.gameover_interval:
-                    #reset game variables
                     print("Game Over")
                     if self.logged_in:
                         self.server.post_score(self.score, self.player_name, self.password)
@@ -352,9 +329,6 @@ class Game():
 
             if self.pause:
                 self.playing = False
-                #self.draw_text('Paused', 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 60, self.BLUE)
-                #self.draw_text('Press P to unpause', 20, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 20, self.BLUE)
-
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
@@ -366,7 +340,6 @@ class Game():
         self.food = [0, 0]
         self.new_food = True
         self.new_piece = [0, 0]
-        #define snake variables
         self.snake_pos = [[int(self.DISPLAY_W / 2), int(self.DISPLAY_H / 2)]]
         self.snake_pos.append([300,310])
         self.snake_pos.append([300,320])
@@ -379,7 +352,6 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running, self.playing = False, False
-                #self.curr_menu.run_display = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
                     self.PAUSE_KEY = True
