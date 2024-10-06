@@ -57,8 +57,11 @@ class Game():
 
         self.BRIGHT_RED = pygame.Color(255, 69, 0)
         self.BLACK = pygame.Color(0, 0, 0)
-
+        
+        print("Loading screen")
         self.loaded = False
+        self.loading_thread = threading.Thread(target=self.loading_screen)
+        self.loading_thread.start()
 
         #setup a rectangle for "Play Again" Option
         self.again_rect = Rect(self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2, 160, 50)
@@ -127,6 +130,27 @@ class Game():
 
         self.loaded = True
         print("Game Initialized")
+        self.loading_thread.join()
+        
+
+    def loading_screen(self):
+        anim_time = time.time()
+        dots = ''
+        num_dots = 0
+        while not self.loaded:
+            self.draw_screen()
+            self.draw_text('Loading' + dots, 40, self.DISPLAY_W // 2 - 80, self.DISPLAY_H // 2 - 20, self.BLACK)
+            self.window.blit(self.display, (0, 0))
+            if num_dots < 4 and time.time() - anim_time > 0.5:
+                dots += '.'
+                num_dots += 1
+                anim_time = time.time()
+            elif num_dots == 4 and time.time() - anim_time > 0.5:
+                dots = ''
+                num_dots = 0
+                anim_time = time.time()
+            pygame.display.update()
+
 
     def draw_background(self,background_image):
         self.display.blit(background_image, (0, 0))
