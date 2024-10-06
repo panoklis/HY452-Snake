@@ -363,6 +363,9 @@ class Settings(Menu):
         if self.game.BACK_KEY:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
+            if self.speed_enabled:
+                self.speed_enabled = False
+                self.speed_color = self.game.LIGHT_YELLOW
         if self.game.LEFT_KEY:
             if self.speed_enabled:
                 #Cursor size changes up to 100
